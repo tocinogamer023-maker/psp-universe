@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PSP Universe">
+<meta name="theme-color" content="#0b0d14">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="style.css">
+<title>PSP Universe</title></head>
+<body>
+<div id="bg"></div><div id="ov"></div>
+<header><div><h1 id="ttl"></h1><p id="sub"></p></div>
+<div class="hb"><button id="bView" aria-label="Cambiar vista">▦</button><button id="bSet" aria-label="Ajustes">⚙︎</button></div></header>
+<div class="bar"><input id="q" type="search" placeholder="Buscar juegos…" autocomplete="off"><div id="chips"></div></div>
+<main id="lib"></main>
+<button id="fab" aria-label="Añadir juego">＋</button>
+<div id="toast" role="status"></div>
+
+<dialog id="dg"><form id="fm"><h2 id="ft">Añadir juego</h2>
+<input type="hidden" name="gid">
+<label>Nombre<input name="name" required maxlength="120"></label>
+<label>Categoría<input name="cat" list="cl" maxlength="40" placeholder="Acción, RPG, Deportes…"><datalist id="cl"></datalist></label>
+<label>Nota (opcional)<textarea name="note" rows="2" maxlength="300"></textarea></label>
+<label>Enlace profundo de PPSSPP<input name="link" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ppsspp://open?path=…"></label>
+<button type="button" id="paste" class="sec">Pegar enlace del portapapeles</button>
+<div class="cvrow"><div id="pv" class="pv"></div>
+<div class="col"><label class="sec btn">Elegir portada de Fotos/Archivos<input type="file" id="cf" accept="image/*" hidden></label>
+<input name="curl" inputmode="url" autocapitalize="off" placeholder="…o URL de imagen (https://…)">
+<button type="button" id="cclr" class="sec">Quitar portada</button></div></div>
+<label class="chk"><input type="checkbox" name="fav"> ★ Favorito</label>
+<p id="err" class="err" hidden></p>
+<div class="two"><button type="button" id="fc" class="sec">Cancelar</button><button type="submit" class="pri">Guardar</button></div>
+</form></dialog>
+
+<dialog id="ds"><div class="two top"><h2>Ajustes</h2><button id="dc" class="sec">Cerrar</button></div>
+<p id="st" class="st"></p>
+<details open><summary>Biblioteca</summary>
+<label>Nombre<input data-m="title" maxlength="60"></label>
+<label>Subtítulo<input data-m="sub" maxlength="80"></label></details>
+<details open><summary>Apariencia</summary>
+<label class="row">Tema<select data-k="mode"><option value="dark">Oscuro</option><option value="light">Claro</option><option value="custom">Personalizado</option></select></label>
+<label class="row">Color principal<input type="color" data-k="primary"></label>
+<label class="row">Color secundario<input type="color" data-k="secondary"></label>
+<label class="row">Color de fondo<input type="color" data-k="bg"></label>
+<label class="row">Tipografía<select data-k="font"><option value="system">Sistema</option><option value="rounded">Redondeada</option><option value="serif">Serif</option><option value="mono">Monoespaciada</option></select></label>
+<label class="row">Cristal<input type="range" data-k="glass" min="0" max="100"></label>
+<label class="row">Desenfoque<input type="range" data-k="blur" min="0" max="30"></label>
+<label class="row">Oscurecer fondo<input type="range" data-k="overlay" min="0" max="90"></label>
+<label class="row">Tamaño portadas<input type="range" data-k="cover" min="110" max="260"></label>
+<label class="row">Esquinas<input type="range" data-k="radius" min="0" max="32"></label>
+<label class="row">Sombra<input type="range" data-k="shadow" min="0" max="80"></label>
+<label class="row">Espaciado<input type="range" data-k="gap" min="6" max="28"></label>
+<label class="row">Animaciones<input type="checkbox" data-k="anim"></label>
+<label class="row">Fondo animado (degradado, si no hay imagen)<input type="checkbox" data-k="animBg"></label></details>
+<details><summary>Imagen de fondo</summary>
+<label class="sec btn">Elegir imagen de Fotos/Archivos<input type="file" id="bf" accept="image/*" hidden></label>
+<button id="bclr" class="sec">Quitar imagen de fondo</button></details>
+<details><summary>Temas guardados</summary>
+<div class="row"><input id="tn" maxlength="40" placeholder="Nombre del tema"><button id="ts" class="pri">Guardar</button></div>
+<div id="tl"></div>
+<button id="tr" class="sec">Restaurar tema predeterminado</button>
+<p class="mut">Restaurar no borra tus juegos.</p></details>
+<details><summary>Copia de seguridad</summary>
+<button id="ex" class="pri">Exportar copia (.json)</button>
+<label class="sec btn">Importar copia<input type="file" id="imf" accept=".json,application/json" hidden></label>
+<p class="mut">La copia incluye juegos, temas, ajustes y las imágenes guardadas en el iPhone (portadas y fondos). Las portadas con URL solo guardan la dirección. Si borras los datos de Safari o del sitio, se pierde lo local: exporta con frecuencia. Importar reemplaza la biblioteca actual y siempre pide confirmación.</p></details>
+<details><summary>Enlaces de PPSSPP</summary>
+<p class="mut">Esta app no puede leer la carpeta de PPSSPP ni tus ROM. En PPSSPP usa «Copiar enlace profundo» en el juego y pégalo aquí. «Abrir» solo lanza el enlace; si PPSSPP se reinstala o iOS cambia la ruta, el enlace puede dejar de funcionar y habrá que copiarlo de nuevo. Eliminar un juego aquí nunca toca la ROM ni las partidas.</p></details>
+</dialog>
+<script src="app.js"></script>
+</body></html>
