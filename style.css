@@ -117,3 +117,33 @@ body[data-btn=square] .play,body[data-btn=square] .ib{border-radius:4px}
 .panel .dng{width:100%;margin-top:8px;min-height:44px}
 #presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
 #presets button{border-radius:99px;padding:0 14px;min-height:36px;background:rgba(128,128,128,.25)}
+
+/* ===== Actualización grande ===== */
+:root{--spd:1}
+.hb .sq{width:50px;height:50px;border-radius:12px;font-size:22px}
+#secs{display:flex;gap:6px;overflow-x:auto;padding:10px 0 0}
+#secs button{flex:none;border-radius:99px;padding:0 14px;min-height:38px;font-weight:600;background:var(--glass);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));border:1px solid rgba(255,255,255,.12)}
+#secs button.on{background:var(--p);color:var(--onp)}
+#chips{padding:8px 0}#chips button{min-height:32px;padding:4px 12px;font-size:14px}
+.sr{display:grid;grid-template-columns:44px 1fr auto 28px;gap:6px;align-items:center;margin:6px 0}
+.sr select{width:auto;padding:10px 6px}.sr .se{text-align:center;padding:8px}
+.sr input[type=checkbox]{width:24px;height:24px;padding:0}
+.pp video{width:100%;max-height:68vh;border-radius:12px;background:#000;display:block}
+.sheet.on .panel{animation:pn .22s ease both}
+@keyframes pn{from{opacity:0;transform:translateY(14px) scale(.98)}}
+body[data-canim=none] .card{animation:none}
+body[data-canim=cascade] .card{animation:cas calc(.5s/var(--spd)) both;animation-delay:calc(var(--i,0)*70ms/var(--spd))}
+@keyframes cas{from{opacity:0;transform:translateY(24px) scale(.96)}}
+body[data-canim=zoom] .card{animation:zm calc(.45s/var(--spd)) cubic-bezier(.2,1.4,.4,1) both}
+@keyframes zm{from{opacity:0;transform:scale(.7)}}
+body[data-canim=flip] .card{animation:fl calc(.6s/var(--spd)) both;animation-delay:calc(var(--i,0)*60ms/var(--spd))}
+@keyframes fl{from{opacity:0;transform:perspective(700px) rotateY(-70deg)}}
+body[data-canim=float] .card{animation:fo calc(5s/var(--spd)) ease-in-out infinite;animation-delay:calc(var(--i,0)*-.7s)}
+@keyframes fo{50%{transform:translateY(-6px)}}
+body[data-canim=breathe] .card{animation:br calc(3s/var(--spd)) ease-in-out infinite}
+@keyframes br{50%{box-shadow:0 0 22px var(--p),0 0 2px var(--s)}}
+body[data-canim=shine] .cv::after,body[data-canim=holo] .cv::after{content:'';position:absolute;inset:0;pointer-events:none}
+body[data-canim=shine] .cv::after{background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);background-size:250% 100%;animation:sh calc(3.5s/var(--spd)) ease-in-out infinite}
+@keyframes sh{from{background-position:150% 0}to{background-position:-50% 0}}
+body[data-canim=holo] .cv::after{background:conic-gradient(from 0deg,#ff6ad5,#6ad1ff,#9dff6a,#ffd36a,#ff6ad5);mix-blend-mode:soft-light;opacity:.55;animation:ho calc(6s/var(--spd)) linear infinite}
+@keyframes ho{to{filter:hue-rotate(360deg)}}
