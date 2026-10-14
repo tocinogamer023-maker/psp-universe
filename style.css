@@ -89,3 +89,31 @@ input,select,textarea{font:inherit;font-size:16px;color:inherit;width:100%;paddi
 .st:empty{display:none}.st:not(.bad){background:#1e8e5a}
 .noanim *,.noanim *::before{animation:none!important;transition:none!important}
 @media (prefers-reduced-motion:reduce){*,*::before{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ===== Actualización 2A ===== */
+h1{font-size:var(--hsz)}
+.cv{position:relative;overflow:hidden;aspect-ratio:var(--ratio)}
+.cv::before{content:'';position:absolute;inset:-12%;background:var(--ci) center/cover;filter:blur(16px) brightness(.65)}
+.cv img,.ini{position:relative;object-fit:var(--fit)}
+.cv img{filter:brightness(var(--bright))}
+.card{border:var(--cb) solid var(--cbc)}
+.inf{padding:var(--pad);gap:6px;text-align:var(--calign)}
+.inf b{font-size:var(--tsz);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{font-size:11px;padding:1px 8px}
+body[data-calign=center] .tag{align-self:center}
+.act{padding:0;margin-top:2px;flex-wrap:nowrap;align-items:center}
+.play{flex:1;min-width:0;height:30px;min-height:30px;font-size:13px;padding:0 10px;border-radius:99px}
+.ib{width:30px;height:30px;min-height:30px;font-size:15px;padding:0;flex:none;border-radius:99px}
+body[data-btn=round] .play,body[data-btn=round] .ib{border-radius:10px}
+body[data-btn=square] .play,body[data-btn=square] .ib{border-radius:4px}
+.v-list .card{grid-template-columns:calc(var(--cover)*.7) 1fr;grid-template-rows:auto}
+.v-list .cv{grid-row:auto}
+.v-list .inf{justify-content:center}
+.v-car .card{flex:0 0 min(70%,calc(var(--cover)*1.5))}
+.xs{width:36px;height:36px;min-height:36px;border-radius:50%;background:rgba(128,128,128,.25);padding:0;font-size:16px;flex:none}
+.two>.xs{flex:none}
+.panel.sm{width:min(100%,340px)}
+.panel.sm h3{margin:0 0 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.panel .dng{width:100%;margin-top:8px;min-height:44px}
+#presets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+#presets button{border-radius:99px;padding:0 14px;min-height:36px;background:rgba(128,128,128,.25)}

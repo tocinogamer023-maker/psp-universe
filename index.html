@@ -35,10 +35,12 @@
 <div class="two"><button type="button" id="fc" class="sec">Cancelar</button><button type="submit" class="pri">Guardar</button></div>
 </form></div></div>
 
+<div id="am" class="sheet"><div class="panel sm"><h3 id="amt"></h3><button id="ame" class="sec">✎ Editar juego</button><button id="amd" class="dng">🗑 Eliminar de la biblioteca</button><button id="amc" class="sec">Cancelar</button></div></div>
+
 <div id="ds" class="sheet"><div class="panel pf">
-<div class="two top"><h2>Ajustes</h2><button id="dc" class="sec">Cerrar</button></div>
+<div class="two top"><h2>Ajustes</h2><button id="dc" class="xs" aria-label="Cerrar">✕</button></div>
 <p id="st" class="st"></p>
-<nav id="tabs"><button data-t="gen" class="on">General</button><button data-t="fon">Fondo</button><button data-t="est">Estilo</button><button data-t="tem">Temas</button><button data-t="dat">Datos</button><button data-t="ayu">Ayuda</button></nav>
+<nav id="tabs"><button data-t="gen" class="on">General</button><button data-t="fon">Fondo</button><button data-t="por">Portadas</button><button data-t="tar">Tarjetas</button><button data-t="est">Estilo</button><button data-t="tem">Temas</button><button data-t="dat">Datos</button><button data-t="ayu">Ayuda</button></nav>
 <div class="pbody">
 <section data-s="gen">
 <label>Nombre de la biblioteca<input data-m="title" maxlength="60"></label>
@@ -55,6 +57,7 @@
 <p class="mut">Los videos van sin sonido, en bucle y se guardan solo en este iPhone (máx. 80 MB). No entran en la copia de seguridad. Con el modo de bajo consumo, iOS puede dejarlos en imagen fija.</p>
 </section>
 <section data-s="est" hidden>
+<h3>Estilos rápidos</h3><div id="presets"></div>
 <label class="row">Tema<select data-k="mode"><option value="dark">Oscuro</option><option value="light">Claro</option><option value="custom">Personalizado</option></select></label>
 <label class="row">Color principal<input type="color" data-k="primary"></label>
 <label class="row">Color secundario<input type="color" data-k="secondary"></label>
@@ -62,11 +65,28 @@
 <label class="row">Tipografía<select data-k="font"><option value="system">Sistema</option><option value="rounded">Redondeada</option><option value="serif">Serif</option><option value="mono">Monoespaciada</option></select></label>
 <label class="row">Cristal<input type="range" data-k="glass" min="0" max="100"></label>
 <label class="row">Desenfoque<input type="range" data-k="blur" min="0" max="30"></label>
-<label class="row">Tamaño portadas<input type="range" data-k="cover" min="110" max="260"></label>
+<label class="row">Tamaño del título<input type="range" data-k="hsize" min="18" max="40"></label>
+<label class="row">Animaciones<input type="checkbox" data-k="anim"></label>
+</section>
+<section data-s="por" hidden>
+<label class="row">Ajuste de imagen<select data-k="fit"><option value="contain">Completa</option><option value="cover">Rellenar</option></select></label>
+<label class="row">Proporción<select data-k="ratio"><option value="3/4">Vertical 3:4</option><option value="2/3">Vertical 2:3</option><option value="1/1">Cuadrada 1:1</option><option value="4/3">Horizontal 4:3</option><option value="16/9">Panorámica 16:9</option></select></label>
+<label class="row">Tamaño<input type="range" data-k="cover" min="110" max="260"></label>
 <label class="row">Esquinas<input type="range" data-k="radius" min="0" max="32"></label>
 <label class="row">Sombra<input type="range" data-k="shadow" min="0" max="80"></label>
-<label class="row">Espaciado<input type="range" data-k="gap" min="6" max="28"></label>
-<label class="row">Animaciones<input type="checkbox" data-k="anim"></label>
+<label class="row">Brillo de la imagen<input type="range" data-k="bright" min="40" max="140"></label>
+<label class="row">Grosor del borde<input type="range" data-k="cbord" min="0" max="6"></label>
+<label class="row">Color del borde<input type="color" data-k="cbc"></label>
+<label class="row">Resplandor neón<input type="range" data-k="glow" min="0" max="40"></label>
+<label class="row">Espaciado entre portadas<input type="range" data-k="gap" min="6" max="28"></label>
+</section>
+<section data-s="tar" hidden>
+<label class="row">Mostrar categoría<input type="checkbox" data-k="showCat"></label>
+<label class="row">Mostrar nota<input type="checkbox" data-k="showNote"></label>
+<label class="row">Estilo de botones<select data-k="btn"><option value="pill">Píldora</option><option value="round">Redondeado</option><option value="square">Cuadrado</option></select></label>
+<label class="row">Alineación del texto<select data-k="calign"><option value="left">Izquierda</option><option value="center">Centro</option></select></label>
+<label class="row">Tamaño del texto<input type="range" data-k="tsize" min="11" max="20"></label>
+<label class="row">Espacio interior<input type="range" data-k="pad" min="4" max="20"></label>
 </section>
 <section data-s="tem" hidden>
 <div class="row"><input id="tn" maxlength="40" placeholder="Nombre del tema"><button id="ts" class="pri">Guardar</button></div>
