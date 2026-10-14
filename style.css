@@ -138,12 +138,19 @@ body[data-canim=zoom] .card{animation:zm calc(.45s/var(--spd)) cubic-bezier(.2,1
 @keyframes zm{from{opacity:0;transform:scale(.7)}}
 body[data-canim=flip] .card{animation:fl calc(.6s/var(--spd)) both;animation-delay:calc(var(--i,0)*60ms/var(--spd))}
 @keyframes fl{from{opacity:0;transform:perspective(700px) rotateY(-70deg)}}
-body[data-canim=float] .card{animation:fo calc(5s/var(--spd)) ease-in-out infinite;animation-delay:calc(var(--i,0)*-.7s)}
-@keyframes fo{50%{transform:translateY(-6px)}}
-body[data-canim=breathe] .card{animation:br calc(3s/var(--spd)) ease-in-out infinite}
-@keyframes br{50%{box-shadow:0 0 22px var(--p),0 0 2px var(--s)}}
-body[data-canim=shine] .cv::after,body[data-canim=holo] .cv::after{content:'';position:absolute;inset:0;pointer-events:none}
-body[data-canim=shine] .cv::after{background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);background-size:250% 100%;animation:sh calc(3.5s/var(--spd)) ease-in-out infinite}
-@keyframes sh{from{background-position:150% 0}to{background-position:-50% 0}}
-body[data-canim=holo] .cv::after{background:conic-gradient(from 0deg,#ff6ad5,#6ad1ff,#9dff6a,#ffd36a,#ff6ad5);mix-blend-mode:soft-light;opacity:.55;animation:ho calc(6s/var(--spd)) linear infinite}
-@keyframes ho{to{filter:hue-rotate(360deg)}}
+
+/* ===== Definitiva: contornos, rendimiento y carrusel Xbox ===== */
+#q,.hb button,#secs button,#chips button,.ib{border:1px solid var(--line)}
+.card,#chips button,#secs button{-webkit-backdrop-filter:none;backdrop-filter:none}
+.cv{cursor:pointer}
+.cv::before{filter:blur(10px) brightness(.65)}
+.cv::after{content:'';position:absolute;inset:0;background:#000;opacity:var(--dim,0);pointer-events:none}
+.meta{display:flex;align-items:center;gap:6px;min-width:0}
+.meta .tag{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-self:auto}
+.meta .fv{margin-left:auto}
+.pb{position:absolute;right:8px;bottom:8px;width:34px;height:34px;border-radius:50%;background:var(--p);color:var(--onp);display:grid;place-items:center;font-size:14px;opacity:0;z-index:2;pointer-events:none;transition:opacity .25s}
+#lib{position:relative}
+.v-car{gap:calc(var(--gap) + 4px);padding-top:18px;padding-bottom:18px}
+.v-car .card{flex:0 0 min(46%,calc(var(--cover)*1.15));animation:none!important;transition:none;will-change:transform;backface-visibility:hidden}
+.v-car .card.cen .pb{opacity:1}
+.v-car .card:not(.cen) .inf{visibility:hidden}
