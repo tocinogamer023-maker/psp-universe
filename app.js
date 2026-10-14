@@ -35,7 +35,7 @@ function orient(){
  const W=Math.max(innerWidth,document.documentElement.clientWidth),H=Math.max(innerHeight,document.documentElement.clientHeight),land=W>H,o=S.orient;let r=0;
  if(o==='v')r=land?90:0;else if(o==='h')r=land?0:90;else if(o==='hi')r=land?180:-90;
  const a=$('#app'),sw=r===90||r===-90;
- a.style.width=r===0?'100%':(sw?H:W)+'px';a.style.height=r===0?'100%':(sw?W:H)+'px';
+ a.style.width=(sw?H:W)+'px';a.style.height=(sw?W:H)+'px';
  a.style.transform=r===90?`translate(${W}px,0) rotate(90deg)`:r===-90?`translate(0,${H}px) rotate(-90deg)`:r===180?`translate(${W}px,${H}px) rotate(180deg)`:'none';
  a.className=r?'rx':'r0';
  const k=o==='v'?'V':o==='h'?'H':o==='hi'?'HI':land?'H':'V';
@@ -263,9 +263,11 @@ function centerCard(c){const l=$('#lib');l.scrollTo({left:c.offsetLeft+c.offsetW
 function tap(g,c){if($('#lib').className==='v-car'&&!c.classList.contains('cen')){centerCard(c);snd('swap');return}play(g)}
 function applyCar(){
  const l=$('#lib'),cs=[...l.children].filter(c=>c.classList.contains('card'));
- if(l.className!=='v-car'){l.style.paddingLeft=l.style.paddingRight='';cs.forEach(c=>{c.style.transform='';c.style.zIndex='';c.style.removeProperty('--dim');c.classList.remove('cen')});return}
+ if(l.className!=='v-car'){l.style.paddingLeft=l.style.paddingRight='';l.parentElement.style.overflowY='';cs.forEach(c=>{c.style.transform='';c.style.zIndex='';c.style.removeProperty('--dim');c.classList.remove('cen')});return}
  if(!cs.length)return;
- const w=cs[0].offsetWidth,pad=Math.max(16,(l.clientWidth-w)/2)+'px';
+ const m=l.parentElement,[rw,rh]=S.ratio.split('/').map(Number),base=m.clientWidth-32,availH=$('#app').clientHeight-m.offsetTop-14,w=Math.max(90,Math.min(base*.46,S.cover*1.15,(availH-110)/(rh/rw)));
+ l.style.setProperty('--cw',w+'px');m.style.overflowY='hidden';
+ const pad=Math.max(16,(m.clientWidth-w)/2)+'px';
  if(l.style.paddingLeft!==pad){l.style.paddingLeft=pad;l.style.paddingRight=pad}
  const mid=l.scrollLeft+l.clientWidth/2,stp=w*.85,Z=S.czoom/100,A=S.cang,D=S.cdim/100;
  cs.forEach(c=>{const t=(c.offsetLeft+c.offsetWidth/2-mid)/stp,at=Math.abs(t),a1=Math.min(at,1),a2=Math.max(0,Math.min(at-1,1));

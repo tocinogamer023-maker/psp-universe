@@ -151,6 +151,6 @@ body[data-canim=flip] .card{animation:fl calc(.6s/var(--spd)) both;animation-del
 .pb{position:absolute;right:8px;bottom:8px;width:34px;height:34px;border-radius:50%;background:var(--p);color:var(--onp);display:grid;place-items:center;font-size:14px;opacity:0;z-index:2;pointer-events:none;transition:opacity .25s}
 #lib{position:relative}
 .v-car{gap:calc(var(--gap) + 4px);padding-top:18px;padding-bottom:18px}
-.v-car .card{flex:0 0 min(46%,calc(var(--cover)*1.15));animation:none!important;transition:none;will-change:transform;backface-visibility:hidden}
+.v-car .card{flex:0 0 var(--cw,150px);animation:none!important;transition:none;will-change:transform;backface-visibility:hidden}
 .v-car .card.cen .pb{opacity:1}
 .v-car .card:not(.cen) .inf{visibility:hidden}
