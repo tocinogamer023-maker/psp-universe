@@ -154,3 +154,44 @@ body[data-canim=flip] .card{animation:fl calc(.6s/var(--spd)) both;animation-del
 .v-car .card{flex:0 0 var(--cw,150px);animation:none!important;transition:none;will-change:transform;backface-visibility:hidden}
 .v-car .card.cen .pb{opacity:1}
 .v-car .card:not(.cen) .inf{visibility:hidden}
+
+/* ===== Masiva: cristal, legibilidad, compacto, 3D, video, ajustes ===== */
+:root{--line2:rgba(128,128,128,.25)}
+h1,#sub,#bigt,#q,#secs button,#chips button,.inf b,.tag,.hb button{text-shadow:var(--ts)}
+#q,.hb button,#secs button,#chips button{-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur))}
+body.lite *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+body.lite .cv::before{filter:none}
+.pb{background:rgba(255,255,255,var(--pa));color:#fff;border:1px solid var(--line);-webkit-backdrop-filter:blur(var(--pblur));backdrop-filter:blur(var(--pblur));text-shadow:none}
+#bigt{display:none;flex:1;min-width:0;text-align:center;font-family:var(--tf);font-size:var(--tfs);color:var(--tfc);font-weight:600;letter-spacing:.4px;white-space:nowrap;overflow:hidden}
+#app.big #bigt{display:block}
+#app.cmp #sub{display:none}
+#app.cmp header{padding:6px 16px}
+#app.cmp .hb button{width:40px;height:40px;font-size:18px}
+#app.cmp .hb .sq{width:42px;height:42px}
+#app.cmp .bar{display:grid;grid-template-columns:minmax(140px,30%) 1fr;column-gap:8px;align-items:center}
+#app.cmp #q{grid-row:1;grid-column:1;padding:8px 10px}
+#app.cmp #secs{grid-row:1;grid-column:2;padding:0}
+#app.cmp #chips{grid-column:1/-1;padding:6px 0 0}
+.inf b,.tag{white-space:nowrap;overflow:hidden;text-overflow:clip}
+.note{display:none;white-space:normal;color:var(--mut)}
+body.shownote .note,.card.flip .note{display:block}
+.cv video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.card.flip .pb{opacity:0!important}
+.cv.fx{animation:fx .5s ease}
+@keyframes fx{0%,100%{transform:perspective(600px) rotateY(0)}50%{transform:perspective(600px) rotateY(90deg)}}
+.val{flex:none!important;width:34px;text-align:right;color:var(--mut);font-size:13px}
+.log{white-space:pre-wrap;font-size:12px;max-height:180px;overflow:auto;background:rgba(0,0,0,.25);border-radius:10px;padding:8px;margin:8px 0}
+.panel.pf{padding:0;border-radius:26px}
+.panel.pf .top{padding:18px 18px 0}
+.panel.pf h2{font-size:26px;letter-spacing:.3px}
+.panel.pf .st{margin:8px 18px}
+#tabs{padding:10px 18px 0;gap:18px;border-bottom:1px solid var(--line2)}
+#tabs button{border-radius:0;background:none;padding:6px 0 10px;min-height:0;color:var(--mut);font-weight:600;border-bottom:2px solid transparent}
+#tabs button.on{background:none;color:var(--txt);border-bottom-color:var(--p)}
+.pbody{padding:14px 18px 22px}
+.pbody section{background:rgba(128,128,128,.10);border-radius:16px;padding:4px 14px}
+.pbody .row{margin:0;padding:11px 0;border-bottom:1px solid var(--line2)}
+.pbody .row:last-child{border-bottom:0}
+.pbody h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin:14px 0 4px}
+.pbody section>.mut{padding:8px 0}
+.pbody section button.sec,.pbody section .dng{margin:8px 0}
