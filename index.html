@@ -12,12 +12,12 @@
 <title>Game Space</title></head>
 <body>
 <div id="app" class="r0">
-<div id="bg"></div><div id="ov"></div><div id="fxb"></div>
+<div id="bg"></div><div id="ov"></div><canvas id="fxb"></canvas>
 <header><div class="tt"><h1 id="ttl"></h1><p id="sub"></p></div><div id="bigt"></div>
 <div class="hb"><button id="bAdd" aria-label="Añadir juego">＋</button><button id="bView" aria-label="Cambiar vista">▦</button><button id="bSet" aria-label="Ajustes">⚙︎</button><button id="bAct" class="sq" aria-label="Acciones rápidas">⚡</button></div></header>
 <div class="bar"><input id="q" type="search" placeholder="Buscar juegos…" autocomplete="off"><div id="secs"></div><div id="chips"></div></div>
 <main id="main"><div id="lib"></div></main>
-<div id="fxf"></div>
+<canvas id="fxf"></canvas>
 <div id="toast" role="status"></div>
 
 <div id="gf" class="sheet"><div class="panel"><form id="fm"><h2 id="ft">Añadir juego</h2>
@@ -104,7 +104,6 @@
 </section>
 <section data-s="tar" hidden>
 <label class="row">Mostrar categoría<input type="checkbox" data-k="showCat"></label>
-<label class="row">Mostrar nota<input type="checkbox" data-k="showNote"></label>
 <label class="row">Estilo de botones<select data-k="btn"><option value="pill">Píldora</option><option value="round">Redondeado</option><option value="square">Cuadrado</option></select></label>
 <label class="row">Alineación del texto<select data-k="calign"><option value="left">Izquierda</option><option value="center">Centro</option></select></label>
 <label class="row">Tamaño del texto<input type="range" data-k="tsize" min="11" max="20"></label>
