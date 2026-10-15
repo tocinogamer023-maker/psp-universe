@@ -4,19 +4,20 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="PSP Universe">
+<meta name="apple-mobile-web-app-title" content="Game Space">
 <meta name="theme-color" content="#0b0d14">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="style.css">
-<title>PSP Universe</title></head>
+<title>Game Space</title></head>
 <body>
 <div id="app" class="r0">
-<div id="bg"></div><div id="ov"></div>
+<div id="bg"></div><div id="ov"></div><div id="fxb"></div>
 <header><div class="tt"><h1 id="ttl"></h1><p id="sub"></p></div><div id="bigt"></div>
 <div class="hb"><button id="bAdd" aria-label="Añadir juego">＋</button><button id="bView" aria-label="Cambiar vista">▦</button><button id="bSet" aria-label="Ajustes">⚙︎</button><button id="bAct" class="sq" aria-label="Acciones rápidas">⚡</button></div></header>
 <div class="bar"><input id="q" type="search" placeholder="Buscar juegos…" autocomplete="off"><div id="secs"></div><div id="chips"></div></div>
 <main id="main"><div id="lib"></div></main>
+<div id="fxf"></div>
 <div id="toast" role="status"></div>
 
 <div id="gf" class="sheet"><div class="panel"><form id="fm"><h2 id="ft">Añadir juego</h2>
@@ -59,6 +60,11 @@
 <div id="bgrows"></div>
 <label class="row">Oscurecer fondo<input type="range" data-k="overlay" min="0" max="90"></label>
 <label class="row">Fondo animado (degradado, si no hay fondo)<input type="checkbox" data-k="animBg"></label>
+<h3>Cristales flotantes</h3>
+<label class="row">Activar<input type="checkbox" data-k="fx"></label>
+<label class="row">Cantidad<input type="range" data-k="fxn" min="0" max="30"></label>
+<label class="row">Intensidad<input type="range" data-k="fxo" min="10" max="100"></label>
+<label class="row">Interactivos (tocar, lanzar, arrastrar)<input type="checkbox" data-k="fxi"></label>
 <p class="mut">Los videos van sin sonido, en bucle y se guardan solo en este iPhone (máx. 80 MB). No entran en la copia de seguridad. Con el modo de bajo consumo, iOS puede dejarlos en imagen fija.</p>
 </section>
 <section data-s="est" hidden>
@@ -123,6 +129,8 @@
 <label class="row">Reproducir solo tras (s, 0 = apagado)<input type="range" data-k="pdelay" min="0" max="15"></label>
 <label class="row">Sonido del video (solo con doble toque)<input type="checkbox" data-k="psound"></label>
 <p class="mut">Doble toque en la portada central del carrusel: gira y muestra el video con las notas debajo. Se elige el video al editar cada juego.</p>
+<h3>Al iniciar un juego</h3>
+<label class="row">Animación<select data-k="lfx"><option value="zoom">Zoom</option><option value="spin">Giro</option><option value="flip">Voltear</option><option value="none">Ninguna</option></select></label>
 </section>
 <section data-s="acc" hidden>
 <p class="mut">El botón ⚡ de la cabecera ejecuta esta cadena paso a paso. Mantenlo pulsado para abrir esta pestaña.</p>

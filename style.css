@@ -195,3 +195,30 @@ body.shownote .note,.card.flip .note{display:block}
 .pbody h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin:14px 0 4px}
 .pbody section>.mut{padding:8px 0}
 .pbody section button.sec,.pbody section .dng{margin:8px 0}
+
+/* ===== Final: giro 3D completo, lados de cómic, cristales, inicio ===== */
+.card{background:none;border:0;box-shadow:none;overflow:visible;display:block;position:relative}
+.fl{position:relative;transform-style:preserve-3d;transform:perspective(900px) rotateY(0deg);transition:transform .7s cubic-bezier(.4,.1,.2,1)}
+.card.flip .fl{transform:perspective(900px) rotateY(180deg)}
+.ff,.fb{border-radius:var(--rad);overflow:hidden;background:var(--glass);border:var(--cb) solid var(--cbc);box-shadow:var(--sh);-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.ff{display:flex;flex-direction:column}
+.fb{position:absolute;inset:0;display:flex;flex-direction:column;transform:rotateY(180deg)}
+.pvb{aspect-ratio:1/1;background:#000;flex:none}
+.pvb video{width:100%;height:100%;object-fit:cover;display:block}
+.pn{flex:1;min-height:0;overflow:auto;padding:var(--pad);font-size:var(--tsz);line-height:1.3;white-space:normal;text-shadow:var(--ts)}
+.v-list .card{display:block}
+.v-list .ff{display:grid;grid-template-columns:calc(var(--cover)*.7) 1fr}
+.edge{position:absolute;top:2%;bottom:2%;display:none;pointer-events:none;border:1px solid var(--edgeC);background:repeating-linear-gradient(45deg,var(--edgeC) 0 1px,transparent 1px 6px);opacity:.8;border-radius:calc(var(--rad)*.4)}
+.card.flip .edge{display:none!important}
+#fxb,#fxf{position:absolute;inset:0;pointer-events:none}
+#fxb{z-index:-1}#fxf{z-index:15}
+.sd{position:absolute;left:0;top:0;overflow:visible;pointer-events:none;will-change:transform}
+.sd polygon{fill:rgba(190,225,255,.13);stroke:rgba(225,242,255,.5);stroke-width:1}
+#fxf .sd polygon{pointer-events:auto;touch-action:none}
+.card.go{z-index:40!important}
+.card.go-zoom{animation:gz .45s ease-in forwards!important}
+.card.go-spin{animation:gs .45s ease-in forwards!important}
+.card.go-flip{animation:gf .45s ease-in forwards!important}
+@keyframes gz{to{transform:perspective(700px) rotateY(0deg) scale(2.2);opacity:0}}
+@keyframes gs{to{transform:perspective(700px) rotateY(360deg) scale(1.8);opacity:0}}
+@keyframes gf{to{transform:perspective(700px) rotateY(180deg) scale(1.4);opacity:0}}
