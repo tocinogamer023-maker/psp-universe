@@ -127,7 +127,7 @@ function card(g){
  return art;
 }
 function render(){
- const q=$('#q').value.trim().toLowerCase(),inSec=g=>{const t=g.type||'psp';return sec==='rec'?g.last>0:sec==='all'?t==='psp'||t==='game':t===sec},base=games.filter(inSec),cats=[...new Set(base.map(g=>g.cat).filter(Boolean))].sort();
+ const q=$('#q').value.trim().toLowerCase(),inSec=g=>{const t=g.type||'psp';return sec==='rec'?g.last>0:sec==='all'?ALLIN.includes(t):t===sec},base=games.filter(inSec),cats=[...new Set(base.map(g=>g.cat).filter(Boolean))].sort();
  if(filter&&filter!=='*'&&!cats.includes(filter))filter='';
  $('#secs').replaceChildren(...SK.filter(k=>sc(k).on||k===sec).map(k=>h('button',{class:sec===k?'on':'',onclick:()=>{sec=k;filter='';view();render();snd('swap')}},sc(k).e+' '+sc(k).n)));
  const chip=(l,v)=>h('button',{class:filter===v?'on':'',onclick:()=>{filter=v;render()}},l);
@@ -151,7 +151,7 @@ function play(g){
  if(!okFor(ty,l))return toast(ERR[ty],1);
  stamp(g);
  if(ty==='video'&&/\.(mp4|m4v|mov|webm)(\?|#|$)/i.test(l))return player(l);
- if(ty==='web'||ty==='video'){window.open(l,'_blank','noopener');return}
+ if(ty==='web'||ty==='online'||ty==='video'){window.open(l,'_blank','noopener');return}
  let left=false;const f=()=>{if(document.hidden)left=true};document.addEventListener('visibilitychange',f);
  location.href=l;
  setTimeout(()=>{document.removeEventListener('visibilitychange',f);if(!left)toast(ty==='psp'?'No se pudo abrir PPSSPP. Comprueba que está instalado y copia de nuevo el enlace profundo desde el juego (la ruta puede haber cambiado).':'No se pudo abrir la app. Revisa el atajo o el enlace.',1)},2500);
@@ -164,7 +164,7 @@ function edit(g){
  const f=$('#fm'),E=f.elements;f.reset();editing=g;cs={data:null,clear:false};$('#err').hidden=true;
  $('#ft').textContent=g?'Editar juego':'Añadir juego';
  E.gid.value=g?g.id:'';E.name.value=g?g.name:'';E.cat.value=g?g.cat:'';E.note.value=g?g.note:'';E.link.value=g?g.link:'';E.fav.checked=!!(g&&g.fav);
- E.curl.value=g&&/^https?:/.test(g.cover)?g.cover:'';E.type.value=g?(g.type||'psp'):(['psp','game','web','video'].includes(sec)?sec:'psp');vS={file:null,clear:false};pS={file:null,clear:false};tsync(g);pv();pvsync(g);show('#gf');
+ E.curl.value=g&&/^https?:/.test(g.cover)?g.cover:'';E.type.value=g?(g.type||'psp'):(ALLT.includes(sec)?sec:'psp');vS={file:null,clear:false};pS={file:null,clear:false};tsync(g);pv();pvsync(g);show('#gf');
 }
 $('#fm').onsubmit=async e=>{
  e.preventDefault();$('#err').hidden=true;
@@ -243,7 +243,7 @@ function clean(d){
  if(d.games.length>2000)throw new Error('Demasiados juegos.');
  const s=x=>typeof x==='string'?x:'',okId=x=>/^[\w-]{1,40}$/.test(s(x));
  const im=(Array.isArray(d.images)?d.images:[]).filter(i=>i&&okId(i.id)&&/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s(i.data))&&i.data.length<6e6).map(i=>({id:i.id,data:i.data})),ids=new Set(im.map(i=>i.id));
- const gs=d.games.filter(g=>g&&okId(g.id)&&s(g.name).trim()).map(g=>{const c=s(g.cover),ty=['psp','game','web','video'].includes(g.type)?g.type:'psp';return{type:ty,last:Number.isFinite(g.last)?g.last:0,id:g.id,name:s(g.name).trim().slice(0,120),cat:s(g.cat).slice(0,40),note:s(g.note).slice(0,300),link:okFor(ty,s(g.link))?g.link:'',fav:g.fav===true,cover:c.startsWith('img:')?(ids.has(c.slice(4))?c:''):/^https?:\/\/\S+$/i.test(c)?c:''}});
+ const gs=d.games.filter(g=>g&&okId(g.id)&&s(g.name).trim()).map(g=>{const c=s(g.cover),ty=ALLT.includes(g.type)?g.type:'psp';return{type:ty,last:Number.isFinite(g.last)?g.last:0,id:g.id,name:s(g.name).trim().slice(0,120),cat:s(g.cat).slice(0,40),note:s(g.note).slice(0,300),link:okFor(ty,s(g.link))?g.link:'',fav:g.fav===true,cover:c.startsWith('img:')?(ids.has(c.slice(4))?c:''):/^https?:\/\/\S+$/i.test(c)?c:''}});
  const th=(Array.isArray(d.themes)?d.themes:[]).filter(t=>t&&s(t.id).trim()).slice(0,100).map(t=>({...cleanS(t,ids),id:s(t.id).trim().slice(0,40)}));
  const m=d.meta||{};
  return{games:gs,im,themes:th,S:cleanS(d.settings,ids),M:{title:s(m.title).slice(0,60)||'Game Space',sub:s(m.sub).slice(0,80),view:VIEWS.includes(m.view)?m.view:'grid',secs:cleanSecs(m.secs),acts:cleanActs(m.acts)}};
@@ -345,9 +345,15 @@ document.addEventListener('visibilitychange',()=>{const v=$('#bg video');if(v&&d
 
 
 /* ---------- Tipos de elemento ---------- */
-const LBL={psp:['Enlace profundo de PPSSPP','ppsspp://open?path=…'],game:['Atajo o enlace de la app','shortcuts://run-shortcut?name=…'],web:['Dirección de la página','https://…'],video:['Enlace del video (opcional si importas uno)','https://…']};
-const ERR={psp:'Enlace no válido. Debe empezar por ppsspp://open?path= (en PPSSPP usa «Copiar enlace profundo»).',game:'Enlace no válido. Usa shortcuts://run-shortcut?name=… u otro enlace de app (esquema://…).',web:'La dirección debe empezar por https://',video:'El enlace del video debe empezar por https://'};
-const okFor=(t,l)=>!l||(t==='psp'?okLink(l):t==='game'?/^[a-z][a-z0-9+.-]{1,30}:\/\/\S+$/i.test(l)&&!/^(javascript|data|file|blob):/i.test(l):/^https?:\/\/\S+$/i.test(l));
+const CON=['nes','snes','n64','gbc','gba','nds'],ALLT=['psp','game','web','video','online',...CON],ALLIN=['psp','game','online',...CON];
+const LG=['Enlace del juego o atajo','delta://game/…  o  shortcuts://run-shortcut?name=…'],LW=['Dirección de la página','https://…'];
+const EG='Enlace no válido. Usa un enlace de app (esquema://…), por ejemplo delta://game/… o shortcuts://run-shortcut?name=…',EW='La dirección debe empezar por https://';
+const LBL={psp:['Enlace profundo de PPSSPP','ppsspp://open?path=…'],game:['Atajo o enlace de la app','shortcuts://run-shortcut?name=…'],web:LW,online:LW,video:['Enlace del video (opcional si importas uno)','https://…']};
+CON.forEach(k=>LBL[k]=LG);
+const ERR={psp:'Enlace no válido. Debe empezar por ppsspp://open?path= (en PPSSPP usa «Copiar enlace profundo»).',game:'Enlace no válido. Usa shortcuts://run-shortcut?name=… u otro enlace de app (esquema://…).',web:EW,online:EW,video:'El enlace del video debe empezar por https://'};
+CON.forEach(k=>ERR[k]=EG);
+const okFor=(t,l)=>!l||(t==='psp'?okLink(l):(t==='game'||CON.includes(t))?/^[a-z][a-z0-9+.-]{1,30}:\/\/\S+$/i.test(l)&&!/^(javascript|data|file|blob):/i.test(l):/^https?:\/\/\S+$/i.test(l));
+
 function tsync(g){const E=$('#fm').elements,t=E.type.value;$('#ll').textContent=LBL[t][0];E.link.placeholder=LBL[t][1];$('#vrow').hidden=t!=='video';$('#vname').textContent=vS.file?vS.file.name:(g&&g.vfile&&!vS.clear?'Video importado ✓':'')}
 $('#fm').elements.type.onchange=()=>tsync(editing);
 $('#vf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;vS={file:f,clear:false};tsync(editing)};
@@ -356,7 +362,7 @@ function player(src){const v=$('#plv');v.src=src;show('#pl');v.play().catch(()=>
 $('#plc').onclick=()=>{const v=$('#plv');v.pause();v.removeAttribute('src');v.load();show('#pl',false)};
 
 /* ---------- Secciones ---------- */
-const SK=['rec','all','psp','game','web','video'],SD={rec:['Recientes','🕘'],all:['Todo','🏠'],psp:['PSP','🎮'],game:['Juegos','📱'],web:['Web','🌐'],video:['Videos','🎬']};
+const SK=['rec','all','game','online','web','video','psp','nes','n64','snes','gbc','gba','nds'],SD={rec:['Recientes','🕘'],all:['Todo','🏠'],game:['Juegos','📱'],online:['Juegos online','🌍'],web:['Web','🌐'],video:['Videos','🎬'],psp:['PSP','🎮'],nes:['Nintendo NES','🕹️'],n64:['Nintendo 64','🎲'],snes:['Super Nintendo','🎮'],gbc:['Game Boy Color','🟣'],gba:['Game Boy Advance','🔷'],nds:['Nintendo DS','📟']};
 const sc=k=>{const x=(M.secs||{})[k]||{};return{n:x.n||SD[k][0],e:x.e||SD[k][1],on:x.on!==false,view:x.view||''}};
 const setSec=(k,p)=>{M.secs=M.secs||{};M.secs[k]={...(M.secs[k]||{}),...p};lsSet('psp-m',M)};
 function secUI(){
