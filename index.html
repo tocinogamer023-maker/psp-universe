@@ -4,12 +4,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="PSP Universe">
+<meta name="apple-mobile-web-app-title" content="Game Space">
 <meta name="theme-color" content="#0b0d14">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="style.css">
-<title>PSP Universe</title></head>
+<title>Game Space</title></head>
 <body>
 <div id="app" class="r0">
 <div id="bg"></div><div id="ov"></div>
@@ -98,7 +98,6 @@
 </section>
 <section data-s="tar" hidden>
 <label class="row">Mostrar categoría<input type="checkbox" data-k="showCat"></label>
-<label class="row">Mostrar nota<input type="checkbox" data-k="showNote"></label>
 <label class="row">Estilo de botones<select data-k="btn"><option value="pill">Píldora</option><option value="round">Redondeado</option><option value="square">Cuadrado</option></select></label>
 <label class="row">Alineación del texto<select data-k="calign"><option value="left">Izquierda</option><option value="center">Centro</option></select></label>
 <label class="row">Tamaño del texto<input type="range" data-k="tsize" min="11" max="20"></label>
@@ -123,6 +122,8 @@
 <label class="row">Reproducir solo tras (s, 0 = apagado)<input type="range" data-k="pdelay" min="0" max="15"></label>
 <label class="row">Sonido del video (solo con doble toque)<input type="checkbox" data-k="psound"></label>
 <p class="mut">Doble toque en la portada central del carrusel: gira y muestra el video con las notas debajo. Se elige el video al editar cada juego.</p>
+<h3>Al iniciar un juego</h3>
+<label class="row">Animación<select data-k="lfx"><option value="zoom">Zoom</option><option value="spin">Giro</option><option value="flip">Voltear</option><option value="none">Ninguna</option></select></label>
 </section>
 <section data-s="acc" hidden>
 <p class="mut">El botón ⚡ de la cabecera ejecuta esta cadena paso a paso. Mantenlo pulsado para abrir esta pestaña.</p>

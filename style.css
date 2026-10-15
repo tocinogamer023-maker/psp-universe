@@ -195,3 +195,18 @@ body.shownote .note,.card.flip .note{display:block}
 .pbody h3{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin:14px 0 4px}
 .pbody section>.mut{padding:8px 0}
 .pbody section button.sec,.pbody section .dng{margin:8px 0}
+
+/* ===== Actualización 1: alineación, notas atrás, inicio de juego ===== */
+.v-car{align-items:flex-start}
+.inf{position:relative}
+body.shownote .note{display:none}
+.note{display:none;position:absolute;inset:var(--pad);overflow:auto;font-size:var(--tsz);line-height:1.3;color:var(--txt);text-shadow:var(--ts)}
+.card.flip .note{display:block}
+.card.flip .inf b,.card.flip .inf .meta{visibility:hidden}
+.card.go{z-index:40!important}
+.card.go-zoom{animation:gz .45s ease-in forwards!important}
+.card.go-spin{animation:gs .45s ease-in forwards!important}
+.card.go-flip{animation:gf .45s ease-in forwards!important}
+@keyframes gz{to{transform:perspective(700px) rotateY(0deg) scale(2.2);opacity:0}}
+@keyframes gs{to{transform:perspective(700px) rotateY(360deg) scale(1.8);opacity:0}}
+@keyframes gf{to{transform:perspective(700px) rotateY(180deg) scale(1.4);opacity:0}}
