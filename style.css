@@ -210,3 +210,16 @@ body.shownote .note{display:none}
 @keyframes gz{to{transform:perspective(700px) rotateY(0deg) scale(2.2);opacity:0}}
 @keyframes gs{to{transform:perspective(700px) rotateY(360deg) scale(1.8);opacity:0}}
 @keyframes gf{to{transform:perspective(700px) rotateY(180deg) scale(1.4);opacity:0}}
+
+/* ===== Actualización 3: menú ☰, secciones arriba, video con sonido ===== */
+.mb{flex:none;width:46px;height:46px;border-radius:12px;font-size:22px;background:var(--glass);border:1px solid var(--line);-webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));text-shadow:var(--ts)}
+#app.cmp .mb{width:40px;height:40px;font-size:18px}
+#secs{padding:0 0 8px}
+#app.cmp .bar{grid-template-columns:1fr minmax(140px,30%)}
+#app.cmp #secs{grid-row:1;grid-column:1;padding:0}
+#app.cmp #q{grid-row:1;grid-column:2;padding:8px 10px}
+#app.cmp #chips{grid-column:1/-1;padding:6px 0 0}
+.sheet.drawer{justify-content:flex-start;align-items:stretch;padding:0}
+.panel.dr{width:min(88%,350px);height:100%;max-height:100%;border-radius:0 26px 26px 0}
+.sb{position:absolute;right:8px;top:8px;z-index:3;width:30px;height:30px;min-height:30px;padding:0;border-radius:50%;font-size:14px;background:rgba(0,0,0,.42);border:1px solid var(--line);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.card:not(.flip) .cv video{opacity:0}

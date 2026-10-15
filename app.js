@@ -1,8 +1,8 @@
 'use strict';
 const LOG=(()=>{try{return JSON.parse(localStorage.getItem('psp-log'))||[]}catch{return[]}})();
 function logE(m){LOG.push(new Date().toLocaleTimeString()+' '+String(m).slice(0,160));while(LOG.length>20)LOG.shift();try{localStorage.setItem('psp-log',JSON.stringify(LOG))}catch{}const el=document.getElementById('logv');if(el)el.textContent=LOG.join('\n')}
-addEventListener('error',e=>logE((e.message||'error')+' @'+(e.lineno||'?')));
-addEventListener('unhandledrejection',e=>logE('promesa: '+((e.reason&&e.reason.message)||e.reason)));
+addEventListener('error',e=>{if(e.filename&&!/app\.js/.test(e.filename))return;logE((e.message||'error')+' @'+(e.lineno||'?'))});
+addEventListener('unhandledrejection',e=>{if(e.reason&&e.reason.stack&&!/app\.js/.test(e.reason.stack))return;logE('promesa: '+((e.reason&&e.reason.message)||e.reason))});
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const h=(t,a={},...c)=>{const e=document.createElement(t);for(const k in a){if(k.startsWith('on'))e[k]=a[k];else e.setAttribute(k,a[k])}e.append(...c.flat().filter(x=>x!=null&&x!==false));return e};
 const BGK=['bgImg','bgV','bgH','bgHI'];
@@ -78,7 +78,7 @@ function apply(){
 const saveS=()=>{lsSet('psp-s',S);apply();orient()};
 const sync=()=>$$('[data-k]').forEach(el=>{el[el.type==='checkbox'?'checked':'value']=S[el.dataset.k];if(el._v)el._v.textContent=el.value});
 function bind(){
- $$('[data-k]').forEach(el=>{const k=el.dataset.k,c=el.type==='checkbox';el.oninput=()=>{S[k]=c?el.checked:el.type==='range'?+el.value:el.value;if(k==='bg')S.mode='custom';if(k==='mode'&&PRE[S.mode])S.bg=PRE[S.mode];saveS();sync();if(k==='showCat'||k==='showNote')render();if(['czoom','cang','cdim','cover','gap'].includes(k))applyCar()};el.onchange=()=>toast('Guardado ✓')});
+ const hook=el=>{const k=el.dataset.k,c=el.type==='checkbox';el.oninput=()=>{recent(k);S[k]=c?el.checked:el.type==='range'?+el.value:el.value;if(k==='bg')S.mode='custom';if(k==='mode'&&PRE[S.mode])S.bg=PRE[S.mode];saveS();sync();if(k==='showCat'||k==='showNote')render();if(['czoom','cang','cdim','cover','gap'].includes(k))applyCar()};el.onchange=()=>toast('Guardado ✓')};window.hook=hook;$$('[data-k]').forEach(hook);
  $$('[data-m]').forEach(el=>{el.value=M[el.dataset.m];el.oninput=()=>{M[el.dataset.m]=el.value;lsSet('psp-m',M);head()}});
  $$('#seg button').forEach(b=>b.onclick=()=>{S.orient=b.dataset.o;saveS();toast('Orientación guardada ✓')});
  $$('#tabs button').forEach(b=>b.onclick=()=>{$$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('[data-s]').forEach(s=>s.hidden=s.dataset.s!==b.dataset.t)});
@@ -283,12 +283,15 @@ function tap(g,c){
   if(c._tm){clearTimeout(c._tm);c._tm=0;flipCard(g,c);return}
   c._tm=setTimeout(()=>{c._tm=0;c.classList.contains('flip')?flipCard(g,c):launch(g,c)},300);return}
  launch(g,c)}
-function endFlip(c){const cv=c.firstChild;cv.classList.add('fx');setTimeout(()=>cv.classList.remove('fx'),500);setTimeout(()=>{c.classList.remove('flip');const v=cv.querySelector('video');if(v){v.pause();v.removeAttribute('src');v.remove()}},220)}
+function endFlip(c){const cv=c.firstChild;cv.classList.add('fx');setTimeout(()=>cv.classList.remove('fx'),500);setTimeout(()=>{c.classList.remove('flip');const v=cv.querySelector('video');if(v){v.pause();v.removeAttribute('src');v.remove()}const sb=cv.querySelector('.sb');if(sb)sb.remove()},220)}
 function flipCard(g,c,auto){
  if(c.classList.contains('flip'))return endFlip(c);
  if(!g.prev||!imgs[g.prev])return;
  const cv=c.firstChild;cv.classList.add('fx');setTimeout(()=>cv.classList.remove('fx'),500);
- setTimeout(()=>{c.classList.add('flip');const v=h('video',{muted:'',loop:'',playsinline:'',autoplay:'',preload:'auto'});v.muted=!!auto||!S.psound;v.playsInline=true;v.src=imgs[g.prev];cv.append(v);const go=()=>v.play().catch(()=>{});v.addEventListener('canplay',go,{once:true});go();setTimeout(()=>{if(v.paused)go()},700)},220);
+ const v=h('video',{loop:'',playsinline:'',autoplay:'',preload:'auto'});v.muted=!!auto||!S.psound;v.playsInline=true;v.src=imgs[g.prev];cv.append(v);
+ const b=h('button',{class:'sb','aria-label':'Sonido',onclick:e=>{e.stopPropagation();v.muted=!v.muted;b.textContent=v.muted?'🔇':'🔊';if(v.paused)v.play().catch(()=>{})}},v.muted?'🔇':'🔊');cv.append(b);
+ const go=()=>v.play().catch(()=>{});go();v.addEventListener('canplay',go,{once:true});setTimeout(()=>{if(v.paused)go()},700);
+ setTimeout(()=>c.classList.add('flip'),220);
 }
 function launch(g,c){
  if(!c||S.lfx==='none'){play(g);return}
@@ -325,7 +328,7 @@ function carFrame(){
   const a1=Math.min(at,1),a2=Math.max(0,Math.min(at-1,1)),isC=at<.5;o.v=1;
   c.style.transform=`perspective(700px) rotateY(${(-Math.max(-1,Math.min(1,t))*A).toFixed(1)}deg) scale(${(Z-(Z-.86)*a1-.1*a2).toFixed(3)})`;
   c.style.zIndex=Math.round(10-at*3);c.style.setProperty('--dim',(D*a1+.15*a2).toFixed(2));
-  c.style.boxShadow=T&&a1>.05?`${((t<0?-1:1)*T*a1).toFixed(1)}px 0 0 ${S.edgeC}, var(--sh)`:'';
+  {const sx=(t<0?-1:1)*T*a1;c.style.boxShadow=T&&a1>.05?`${(sx*.55).toFixed(1)}px 0 4px #eef7fd, ${sx.toFixed(1)}px 0 0 #9fc7e8, var(--sh)`:''}
   if(isC!==o.cn){o.cn=isC;c.classList.toggle('cen',isC)}});
  if(best!==lastCi){const first=lastCi<0,c=cm[best].c;lastCi=best;
   document.querySelectorAll('.card.flip').forEach(x=>{if(x!==c||first)endFlip(x)});
@@ -337,6 +340,23 @@ $('#lib').addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(()=>{
 addEventListener('resize',()=>setTimeout(applyCar,60));
 $('#pvf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;pS={file:f,clear:false};pvsync(editing)};
 $('#pvc').onclick=()=>{pS={file:null,clear:true};pvsync(editing)};
+/* ---------- Menú rápido ☰ ---------- */
+const recent=k=>{M.rk=[k,...(M.rk||[]).filter(x=>x!==k)].slice(0,12);lsSet('psp-m',M)};
+function qpUI(){
+ const pk=M.pk||[],rk=(M.rk||[]).filter(k=>!pk.includes(k)),keys=[...pk,...rk].slice(0,10);
+ const rows=keys.map(k=>{const o=document.querySelector('#ds [data-k="'+k+'"]');if(!o)return null;
+  const lab=o.closest('label'),name=lab?lab.firstChild.textContent:k,c=o.cloneNode(true);
+  c.value=o.value;if(o.type==='checkbox')c.checked=o.checked;window.hook(c);
+  const pinned=pk.includes(k),pb=h('button',{class:'ib'+(pinned?' on':''),'aria-label':pinned?'Desanclar':'Anclar',onclick:()=>{M.pk=pinned?pk.filter(x=>x!==k):[...pk,k];lsSet('psp-m',M);qpUI()}},pinned?'📌':'📍');
+  const kids=[h('span',{},name)];
+  if(o.type==='range'){const v=h('span',{class:'val'},o.value);c.addEventListener('input',()=>{v.textContent=c.value});kids.push(v)}
+  kids.push(c,pb);return h('div',{class:'row'},...kids)}).filter(Boolean);
+ $('#qr').replaceChildren(...(rows.length?rows:[h('p',{class:'mut'},'Aún no has cambiado ajustes. Los que cambies aparecerán aquí; fija con 📍 los que quieras tener siempre a mano.')]));
+ sync();
+}
+$('#bMenu').onclick=()=>{sync();qpUI();show('#qp')};
+$('#qc').onclick=()=>show('#qp',false);
+$('#qp').addEventListener('click',e=>{if(e.target===e.currentTarget)show('#qp',false)});
 const showLog=()=>{$('#logv').textContent=LOG.join('\n')||'Sin errores registrados.'};
 $('#logc').onclick=()=>navigator.clipboard.writeText(LOG.join('\n')).then(()=>toast('Registro copiado ✓')).catch(()=>toast('No se pudo copiar.',1));
 $('#logx').onclick=()=>{LOG.length=0;try{localStorage.removeItem('psp-log')}catch{}showLog()};
@@ -430,7 +450,7 @@ document.addEventListener('pointerdown',()=>{const v=$('#bg video');if(v&&v.paus
  try{await openDB();games=await all('games');(await all('images')).forEach(i=>{if(i.blob){isVid.add(i.id);blobs[i.id]=i.blob;imgs[i.id]=URL.createObjectURL(i.blob)}else imgs[i.id]=i.data})}
  catch(e){toast('Este navegador no permite guardar datos (¿modo privado?). Los cambios no se conservarán.',1)}
  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch{}
- if(!S.pdv){S.pdv=1;S.pdelay=5;lsSet('psp-s',S)}
+ if(!S.pdv)S.pdelay=5;if((S.pdv||0)<2){S.pdv=2;S.psound=true;lsSet('psp-s',S)}
  bind();orient();apply();head();view();render();[0,250,800,2000].forEach(ms=>setTimeout(orient,ms));
  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();

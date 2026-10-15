@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="utf-8">
+<html lang="es" translate="no"><head><meta charset="utf-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -13,9 +14,9 @@
 <body>
 <div id="app" class="r0">
 <div id="bg"></div><div id="ov"></div>
-<header><div class="tt"><h1 id="ttl"></h1><p id="sub"></p></div><div id="bigt"></div>
+<header><button id="bMenu" class="mb" aria-label="Menú rápido">☰</button><div class="tt"><h1 id="ttl"></h1><p id="sub"></p></div><div id="bigt"></div>
 <div class="hb"><button id="bAdd" aria-label="Añadir juego">＋</button><button id="bView" aria-label="Cambiar vista">▦</button><button id="bSet" aria-label="Ajustes">⚙︎</button><button id="bAct" class="sq" aria-label="Acciones rápidas">⚡</button></div></header>
-<div class="bar"><input id="q" type="search" placeholder="Buscar juegos…" autocomplete="off"><div id="secs"></div><div id="chips"></div></div>
+<div class="bar"><div id="secs"></div><input id="q" type="search" placeholder="Buscar juegos…" autocomplete="off"><div id="chips"></div></div>
 <main id="main"><div id="lib"></div></main>
 <div id="toast" role="status"></div>
 
@@ -39,6 +40,8 @@
 </form></div></div>
 
 <div id="pl" class="sheet"><div class="panel pp"><video id="plv" controls playsinline></video><button id="plc" class="sec">Cerrar</button></div></div>
+
+<div id="qp" class="sheet drawer"><div class="panel pf dr"><div class="two top"><h2>Menú rápido</h2><button id="qc" class="xs" aria-label="Cerrar">✕</button></div><div class="pbody"><h3>Ajustes recientes y fijados</h3><section id="qr"></section></div></div></div>
 
 <div id="am" class="sheet"><div class="panel sm"><h3 id="amt"></h3><button id="ame" class="sec">✎ Editar juego</button><button id="amd" class="dng">🗑 Eliminar de la biblioteca</button><button id="amc" class="sec">Cancelar</button></div></div>
 
@@ -92,7 +95,6 @@
 <label class="row">Tamaño en carrusel<input type="range" data-k="ccover" min="110" max="300"></label>
 <label class="row">Compactar cabecera en horizontal<input type="checkbox" data-k="compact"></label>
 <label class="row">Grosor lateral 3D<input type="range" data-k="edgeT" min="0" max="14"></label>
-<label class="row">Color lateral 3D<input type="color" data-k="edgeC"></label>
 <label class="row">Botón ▶ transparencia<input type="range" data-k="pa" min="0" max="60"></label>
 <label class="row">Botón ▶ desenfoque<input type="range" data-k="pblur" min="0" max="30"></label>
 </section>
@@ -120,7 +122,7 @@
 <p class="mut">Con el interruptor de silencio del iPhone puesto no suenan.</p>
 <h3>Video de presentación</h3>
 <label class="row">Reproducir solo tras (s, 0 = apagado)<input type="range" data-k="pdelay" min="0" max="15"></label>
-<label class="row">Sonido del video (solo con doble toque)<input type="checkbox" data-k="psound"></label>
+<label class="row">Doble toque abre el video con sonido<input type="checkbox" data-k="psound"></label>
 <p class="mut">Doble toque en la portada central del carrusel: gira y muestra el video con las notas debajo. Se elige el video al editar cada juego.</p>
 <h3>Al iniciar un juego</h3>
 <label class="row">Animación<select data-k="lfx"><option value="zoom">Zoom</option><option value="spin">Giro</option><option value="flip">Voltear</option><option value="none">Ninguna</option></select></label>
