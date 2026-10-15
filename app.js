@@ -6,7 +6,7 @@ addEventListener('unhandledrejection',e=>logE('promesa: '+((e.reason&&e.reason.m
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const h=(t,a={},...c)=>{const e=document.createElement(t);for(const k in a){if(k.startsWith('on'))e[k]=a[k];else e.setAttribute(k,a[k])}e.append(...c.flat().filter(x=>x!=null&&x!==false));return e};
 const BGK=['bgImg','bgV','bgH','bgHI'];
-const DEF={mode:'dark',primary:'#7c5cff',secondary:'#19c6e6',bg:'#0b0d14',bgImg:'',bgV:'',bgH:'',bgHI:'',orient:'auto',overlay:35,blur:12,glass:55,cover:150,radius:18,shadow:30,gap:14,font:'system',anim:true,animBg:false,fit:'contain',ratio:'3/4',cbord:0,cbc:'#ffffff',bright:100,showCat:true,showNote:false,btn:'pill',tsize:14,pad:10,hsize:24,calign:'left',canim:'cascade',aspd:100,sfx:true,vol:40,pack:'soft',line:35,czoom:112,cang:38,cdim:45,bigt:true,tf:'system',tfs:26,tfc:'#ffffff',legib:60,perf:'full',ccover:190,edgeT:7,edgeC:'#ffffff',compact:true,pblur:10,pa:25,pdelay:0,psound:false,pdv:0,fx:true,fxn:14,fxo:60,fxi:true,lfx:'zoom',mus:true,muv:50,mut:'p0',pins:['music'],recent:[]};
+const DEF={mode:'dark',primary:'#7c5cff',secondary:'#19c6e6',bg:'#0b0d14',bgImg:'',bgV:'',bgH:'',bgHI:'',orient:'auto',overlay:35,blur:12,glass:55,cover:150,radius:18,shadow:30,gap:14,font:'system',anim:true,animBg:false,fit:'contain',ratio:'3/4',cbord:0,cbc:'#ffffff',bright:100,showCat:true,showNote:false,btn:'pill',tsize:14,pad:10,hsize:24,calign:'left',canim:'cascade',aspd:100,sfx:true,vol:40,pack:'soft',line:35,czoom:112,cang:38,cdim:45,bigt:true,tf:'system',tfs:26,tfc:'#ffffff',legib:60,perf:'full',ccover:190,edgeT:7,edgeC:'#ffffff',compact:true,pblur:10,pa:25,pdelay:0,psound:false};
 const FONTS={system:'-apple-system,system-ui,sans-serif',rounded:'ui-rounded,"SF Pro Rounded",system-ui,sans-serif',serif:'ui-serif,Georgia,serif',mono:'ui-monospace,Menlo,monospace',didot:'"Didot","Bodoni 72",serif',avenir:'"Avenir Next",system-ui,sans-serif',futura:'"Futura","Avenir Next",sans-serif',optima:'"Optima",sans-serif',copper:'"Copperplate",serif',marker:'"Marker Felt",cursive'};
 const PRE={dark:'#0b0d14',light:'#f1f3f9'},VIEWS=['list','grid','car'],ICON={list:'☰',grid:'▦',car:'◫'},ORI=['auto','v','h','hi'];
 const PRESETS={
@@ -19,7 +19,7 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const ls=(k,d)=>{try{return{...d,...JSON.parse(localStorage.getItem(k))}}catch{return{...d}}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 const RM=matchMedia('(prefers-reduced-motion: reduce)');
-let db,games=[],imgs={},isVid=new Set(),kinds={},tracks=[],PRIV=false,PUBM=null,S=ls('psp-s',DEF),M=ls('psp-m',{title:'Game Space',sub:'Mis juegos',view:'grid'}),filter='',sec='all',vS={file:null,clear:false},pS={file:null,clear:false},blobs={},curG=null,editing=null,cs={data:null,clear:false},tt,curKey='V',lastBg=null;
+let db,games=[],imgs={},isVid=new Set(),S=ls('psp-s',DEF),M=ls('psp-m',{title:'PSP Universe',sub:'Mi biblioteca de PSP',view:'grid'}),filter='',sec='all',vS={file:null,clear:false},pS={file:null,clear:false},blobs={},curG=null,editing=null,cs={data:null,clear:false},tt,curKey='V',lastBg=null;
 
 /* ---------- IndexedDB (misma base que la versión 1) ---------- */
 const openDB=()=>new Promise((res,rej)=>{const r=indexedDB.open('psp-universe',1);r.onupgradeneeded=()=>['games','images','themes'].forEach(s=>r.result.createObjectStore(s,{keyPath:'id'}));r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>rej(r.error)});
@@ -41,24 +41,20 @@ function orient(){
  const a=$('#app'),sw=r===90||r===-90;
  a.style.width=(sw?H:W)+'px';a.style.height=(sw?W:H)+'px';
  a.style.transform=r===90?`translate(${W}px,0) rotate(90deg)`:r===-90?`translate(0,${H}px) rotate(-90deg)`:r===180?`translate(${W}px,${H}px) rotate(180deg)`:'none';
- a.classList.remove('r0','rx');a.classList.add(r?'rx':'r0');curR=r;curW=W;curH=H;
+ a.classList.remove('r0','rx');a.classList.add(r?'rx':'r0');
  const k=o==='v'?'V':o==='h'?'H':o==='hi'?'HI':land?'H':'V';
  if(k!==curKey){curKey=k;apply()}
  $$('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.o===o));
- setCmp();requestAnimationFrame(applyCar);fxResize();
+ setCmp();requestAnimationFrame(applyCar);
 }
 addEventListener('resize',orient);addEventListener('orientationchange',()=>setTimeout(orient,150));
 
 /* ---------- Tema y fondo ---------- */
 const bgId=()=>S['bg'+curKey]||S.bgImg;
 function bgRender(id){
- const src=imgs[id],bg=$('#bg'),k=kinds[id]||(isVid.has(id)?'vid':'img'),web=!!src&&(k==='web'||k==='doc');
- bg.replaceChildren();bg.style.backgroundImage='';document.body.classList.remove('bgint');$('#bInt').hidden=!web;$('#bInt').textContent='🎯 Tocar fondo';
- if(!src)return;
- if(k==='vid'){const v=h('video',{muted:'',loop:'',playsinline:'','webkit-playsinline':''});v.muted=true;v.defaultMuted=true;v.playsInline=true;v.src=src;bg.append(v);if(!RM.matches)v.play().catch(()=>{})}
- else if(web)bg.append(h('iframe',{src,title:'Fondo',...(k==='web'?{sandbox:'allow-scripts allow-pointer-lock'}:{})}));
- else if(k==='fb')bg.append(h('div',{class:'fbk'},((blobs[id]&&blobs[id].name||'').split('.').pop()||'?').toUpperCase().slice(0,5)));
- else bg.style.backgroundImage=`url("${src}")`;
+ const src=imgs[id],bg=$('#bg');bg.replaceChildren();bg.style.backgroundImage='';
+ if(src&&isVid.has(id)){const v=h('video',{muted:'',loop:'',playsinline:'','webkit-playsinline':''});v.muted=true;v.defaultMuted=true;v.playsInline=true;v.src=src;bg.append(v);if(!RM.matches)v.play().catch(()=>{})}
+ else if(src)bg.style.backgroundImage=`url("${src}")`;
 }
 function apply(){
  const t=S,r=document.documentElement.style,n=parseInt((/^#[0-9a-f]{6}$/i.test(t.bg)?t.bg:DEF.bg).slice(1),16),R=n>>16,G=n>>8&255,B=n&255,light=(.299*R+.587*G+.114*B)/255>.55,p=parseInt(t.primary.slice(1),16),set=(k,v)=>r.setProperty(k,v);
@@ -72,7 +68,7 @@ function apply(){
  document.body.dataset.btn=t.btn;document.body.dataset.calign=t.calign;set('--spd',t.aspd/100);if(!['none','cascade','zoom','flip'].includes(t.canim))t.canim='cascade';document.body.dataset.canim=t.canim;set('--line',`rgba(${light?'0,0,0':'255,255,255'},${t.line/100})`);
  const sa=t.legib/100,sh2=light?'255,255,255':'0,0,0';set('--ts',`0 1px 2px rgba(${sh2},${(sa*.9).toFixed(2)}),0 0 10px rgba(${sh2},${(sa*.6).toFixed(2)})`);
  set('--tf',FONTS[t.tf]||FONTS.system);set('--tfs',t.tfs+'px');set('--tfc',t.tfc);set('--pblur',t.pblur+'px');set('--pa',t.pa/100);
- set('--edgeC',t.edgeC);set('--et',t.edgeT+'px');document.body.dataset.et=t.edgeT;document.body.classList.toggle('lite',t.perf==='lite');document.body.classList.toggle('shownote',!!t.showNote);
+ document.body.classList.toggle('lite',t.perf==='lite');document.body.classList.toggle('shownote',!!t.showNote);
  set('--onp',(.299*(p>>16)+.587*(p>>8&255)+.114*(p&255))/255>.6?'#111':'#fff');
  const id=bgId();
  document.body.classList.toggle('noanim',!t.anim);document.body.classList.toggle('animbg',t.animBg&&!imgs[id]);
@@ -82,8 +78,8 @@ function apply(){
 const saveS=()=>{lsSet('psp-s',S);apply();orient()};
 const sync=()=>$$('[data-k]').forEach(el=>{el[el.type==='checkbox'?'checked':'value']=S[el.dataset.k];if(el._v)el._v.textContent=el.value});
 function bind(){
- $$('[data-k]').forEach(el=>{el.oninput=()=>onK(el);el.onchange=()=>toast('Guardado ✓')});
- $$('[data-m]').forEach(el=>{el.value=M[el.dataset.m];el.oninput=()=>{M[el.dataset.m]=el.value;saveM();head()}});
+ $$('[data-k]').forEach(el=>{const k=el.dataset.k,c=el.type==='checkbox';el.oninput=()=>{S[k]=c?el.checked:el.type==='range'?+el.value:el.value;if(k==='bg')S.mode='custom';if(k==='mode'&&PRE[S.mode])S.bg=PRE[S.mode];saveS();sync();if(k==='showCat'||k==='showNote')render();if(['czoom','cang','cdim','cover','gap'].includes(k))applyCar()};el.onchange=()=>toast('Guardado ✓')});
+ $$('[data-m]').forEach(el=>{el.value=M[el.dataset.m];el.oninput=()=>{M[el.dataset.m]=el.value;lsSet('psp-m',M);head()}});
  $$('#seg button').forEach(b=>b.onclick=()=>{S.orient=b.dataset.o;saveS();toast('Orientación guardada ✓')});
  $$('#tabs button').forEach(b=>b.onclick=()=>{$$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('[data-s]').forEach(s=>s.hidden=s.dataset.s!==b.dataset.t)});
  $('#presets').replaceChildren(...Object.entries(PRESETS).map(([k,v])=>h('button',{onclick:()=>applyPreset(k)},v.n)));
@@ -95,32 +91,22 @@ function view(){const v0=sc(sec).view||M.view,v=VIEWS.includes(v0)?v0:'grid';$('
 async function gcBg(id){
  if(!id||BGK.some(k=>S[k]===id))return;
  if((await all('themes')).some(t=>BGK.some(k=>t[k]===id)))return;
- await del('images',id);if(blobs[id])URL.revokeObjectURL(imgs[id]);delete blobs[id];delete kinds[id];delete imgs[id];isVid.delete(id);
+ await del('images',id);if(isVid.has(id))URL.revokeObjectURL(imgs[id]);delete imgs[id];isVid.delete(id);
 }
 const gcAll=ids=>Promise.all(ids.map(gcBg));
 function bgRows(){
  const N={bgImg:'Global (todos los modos)',bgV:'Vertical',bgH:'Horizontal',bgHI:'Horizontal invertido'};
  $('#bgrows').replaceChildren(...BGK.map(k=>h('div',{class:'row'},
-  h('span',{},h('b',{},N[k]),h('br'),h('small',{class:'mut'},S[k]?KL[kinds[S[k]]||(isVid.has(S[k])?'vid':'img')]:k==='bgImg'?'Sin fondo':'Usa el global')),
-  h('label',{class:'btn'},'Elegir',h('input',{type:'file',hidden:'',onchange:e=>setBg(k,e)})),
+  h('span',{},h('b',{},N[k]),h('br'),h('small',{class:'mut'},S[k]?(isVid.has(S[k])?'Video propio':'Imagen propia'):k==='bgImg'?'Sin fondo':'Usa el global')),
+  h('label',{class:'btn'},'Elegir',h('input',{type:'file',accept:'image/*,video/*',hidden:'',onchange:e=>setBg(k,e)})),
   S[k]?h('button',{class:'dng',onclick:()=>clearBg(k)},'Quitar'):null)));
 }
-const KL={vid:'Video propio',img:'Imagen propia',web:'Interactivo propio',doc:'Documento propio',fb:'Archivo propio'};
-function kindOf(f){const e=(f.name.split('.').pop()||'').toLowerCase(),t=f.type||'';
- if(t.startsWith('video/')||/^(mp4|mov|m4v|webm)$/.test(e))return'vid';
- if(t==='text/html'||t==='image/svg+xml'||/^(html?|xhtml|svg)$/.test(e))return'web';
- if(t==='application/pdf'||e==='pdf'||t.startsWith('text/')||/^(txt|json|xml|md)$/.test(e))return'doc';
- if(/gif|webp|avif|apng/.test(t)||/^(gif|webp|avif|apng)$/.test(e))return'img';
- if(t.startsWith('image/')||/^(jpe?g|png|bmp|heic|heif|tiff?|ico)$/.test(e))return'imgs';
- return'fb'}
-async function saveBlobBg(id,f,kind){await put('images',{id,blob:f,kind,name:f.name.slice(0,60)});imgs[id]=URL.createObjectURL(f);blobs[id]=f;kinds[id]=kind;if(kind==='vid')isVid.add(id)}
 async function setBg(k,e){
  const f=e.target.files[0];e.target.value='';if(!f)return;
  try{
-  if(f.size>80e6)throw new Error('El archivo pesa más de 80 MB.');
-  const id='bg'+uid(),kd=kindOf(f);
-  if(kd==='imgs'){try{const d=await shrink(f,1600);await put('images',{id,data:d});imgs[id]=d}catch{await saveBlobBg(id,f,'img')}}
-  else await saveBlobBg(id,f,kd);
+  const id='bg'+uid();let vid=f.type.startsWith('video/');
+  if(vid){if(f.size>80e6)throw new Error('El video pesa más de 80 MB. Recórtalo o comprímelo.');await put('images',{id,blob:f,vid:true});imgs[id]=URL.createObjectURL(f);blobs[id]=f;isVid.add(id)}
+  else{const d=await shrink(f,1600);await put('images',{id,data:d});imgs[id]=d}
   const old=S[k];S[k]=id;saveS();await gcBg(old);bgRows();toast('Fondo guardado ✓');
  }catch(x){toast(x.message||'No se pudo guardar el fondo.',1)}
 }
@@ -132,26 +118,24 @@ function card(g){
  const src=cover(g),ini=[...g.name.split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0])].join('').toUpperCase()||'?',fb=h('div',{class:'ini'},ini),cv=h('div',{class:'cv'},h('span',{class:'pb'},'▶'));
  fb.style.setProperty('--hue',hue(g.name));
  if(src){cv.style.setProperty('--ci',`url("${src}")`);const im=h('img',{src,alt:'',loading:'lazy'});im.onerror=()=>{cv.style.removeProperty('--ci');im.replaceWith(fb)};cv.append(im)}else cv.append(fb);
- const inf=h('div',{class:'inf'},h('b',{title:g.name},g.name),
+ const art=h('article',{class:'card'},cv,h('div',{class:'inf'},h('b',{title:g.name},g.name),
   h('div',{class:'meta'},S.showCat&&g.cat?h('span',{class:'tag'},g.cat):null,
    h('button',{class:'ib fv'+(g.fav?' on':''),'aria-label':'Favorito',onclick:()=>fav(g)},g.fav?'★':'☆'),
-   h('button',{class:'ib','aria-label':'Más opciones',onclick:()=>more(g)},'⋯')));
- const back=h('div',{class:'fb'},h('div',{class:'pvb'}),h('div',{class:'pn'},g.note||'Sin notas'));
- const art=h('article',{class:'card'},h('div',{class:'fl'},h('div',{class:'ff'},cv,inf),back,h('div',{class:'ew'},h('div',{class:'ed el'}),h('div',{class:'ed er'}))));
- if(src)art.style.setProperty('--ci',`url("${src}")`);
- art._g=g;art.dataset.n=g.name;cv.onclick=()=>tap(g,art);back.onclick=()=>tap(g,art);
+   h('button',{class:'ib','aria-label':'Más opciones',onclick:()=>more(g)},'⋯')),
+  g.note?h('small',{class:'note'},g.note):null));
+ art._g=g;art.dataset.n=g.name;cv.onclick=()=>tap(g,art);
  return art;
 }
 function render(){
- const q=$('#q').value.trim().toLowerCase(),inSec=g=>{const t=g.type||'psp';return sec==='rec'?g.last>0:sec==='all'?ALLIN.includes(t):t===sec},base=vis().filter(inSec),cats=[...new Set(base.map(g=>g.cat).filter(Boolean))].sort();
+ const q=$('#q').value.trim().toLowerCase(),inSec=g=>{const t=g.type||'psp';return sec==='rec'?g.last>0:sec==='all'?t==='psp'||t==='game':t===sec},base=games.filter(inSec),cats=[...new Set(base.map(g=>g.cat).filter(Boolean))].sort();
  if(filter&&filter!=='*'&&!cats.includes(filter))filter='';
- $('#secs').replaceChildren(...SK.filter(k=>sc(k).on||k===sec).map(k=>h('button',{class:sec===k?'on':'',onclick:()=>{sec=k;filter='';view();render();snd('swap')}},sc(k).e+' '+sc(k).n),PRIV?h('button',{class:'lk',onclick:exitPriv},'🔓 Salir'):h('button',{class:'lk',onclick:goPriv},'🔒 Privado')));
+ $('#secs').replaceChildren(...SK.filter(k=>sc(k).on||k===sec).map(k=>h('button',{class:sec===k?'on':'',onclick:()=>{sec=k;filter='';view();render();snd('swap')}},sc(k).e+' '+sc(k).n)));
  const chip=(l,v)=>h('button',{class:filter===v?'on':'',onclick:()=>{filter=v;render()}},l);
  $('#chips').replaceChildren(chip('Todas',''),chip('★ Favoritos','*'),...cats.map(c=>chip(c,c)));
- $('#cl').replaceChildren(...[...new Set(vis().map(g=>g.cat).filter(Boolean))].sort().map(c=>h('option',{value:c})));
+ $('#cl').replaceChildren(...[...new Set(games.map(g=>g.cat).filter(Boolean))].sort().map(c=>h('option',{value:c})));
  let L=base.filter(g=>(!q||(g.name+' '+g.cat+' '+g.note).toLowerCase().includes(q))&&(!filter||(filter==='*'?g.fav:g.cat===filter)));
  L=sec==='rec'?L.sort((a,b)=>b.last-a.last).slice(0,30):L.sort((a,b)=>a.name.localeCompare(b.name));
- const msg=sec==='rec'?'Aún no has abierto nada.':vis().length?'No hay nada aquí todavía.':'Tu biblioteca está vacía.';
+ const msg=sec==='rec'?'Aún no has abierto nada.':games.length?'No hay nada aquí todavía.':'Tu biblioteca está vacía.';
  $('#lib').replaceChildren(...(L.length?L.map((g,i)=>{const c=card(g);c.style.setProperty('--i',Math.min(i,12));return c}):[h('div',{class:'empty'},h('span',{},'🎮'),msg,sec==='rec'?null:h('div',{},h('button',{class:'pri',onclick:()=>edit(null)},'＋ Añadir')))]));
  requestAnimationFrame(applyCar);
 }
@@ -167,7 +151,7 @@ function play(g){
  if(!okFor(ty,l))return toast(ERR[ty],1);
  stamp(g);
  if(ty==='video'&&/\.(mp4|m4v|mov|webm)(\?|#|$)/i.test(l))return player(l);
- if(ty==='web'||ty==='online'||ty==='video'){window.open(l,'_blank','noopener');return}
+ if(ty==='web'||ty==='video'){window.open(l,'_blank','noopener');return}
  let left=false;const f=()=>{if(document.hidden)left=true};document.addEventListener('visibilitychange',f);
  location.href=l;
  setTimeout(()=>{document.removeEventListener('visibilitychange',f);if(!left)toast(ty==='psp'?'No se pudo abrir PPSSPP. Comprueba que está instalado y copia de nuevo el enlace profundo desde el juego (la ruta puede haber cambiado).':'No se pudo abrir la app. Revisa el atajo o el enlace.',1)},2500);
@@ -180,7 +164,7 @@ function edit(g){
  const f=$('#fm'),E=f.elements;f.reset();editing=g;cs={data:null,clear:false};$('#err').hidden=true;
  $('#ft').textContent=g?'Editar juego':'Añadir juego';
  E.gid.value=g?g.id:'';E.name.value=g?g.name:'';E.cat.value=g?g.cat:'';E.note.value=g?g.note:'';E.link.value=g?g.link:'';E.fav.checked=!!(g&&g.fav);
- E.curl.value=g&&/^https?:/.test(g.cover)?g.cover:'';E.type.value=g?(g.type||'psp'):(ALLT.includes(sec)?sec:'psp');vS={file:null,clear:false};pS={file:null,clear:false};tsync(g);pv();pvsync(g);show('#gf');
+ E.curl.value=g&&/^https?:/.test(g.cover)?g.cover:'';E.type.value=g?(g.type||'psp'):(['psp','game','web','video'].includes(sec)?sec:'psp');vS={file:null,clear:false};pS={file:null,clear:false};tsync(g);pv();pvsync(g);show('#gf');
 }
 $('#fm').onsubmit=async e=>{
  e.preventDefault();$('#err').hidden=true;
@@ -190,16 +174,16 @@ $('#fm').onsubmit=async e=>{
  if(url&&!/^https?:\/\/\S+$/i.test(url))return err('La URL de la portada debe empezar por https://');
  const old=editing,oc=old?old.cover:'',oldId=oc.startsWith('img:')?oc.slice(4):'';let cv=oc;
  try{
-  if(cs.data){const id=uid();await put('images',{id,data:cs.data,priv:PRIV});imgs[id]=cs.data;cv='img:'+id}
+  if(cs.data){const id=uid();await put('images',{id,data:cs.data});imgs[id]=cs.data;cv='img:'+id}
   else if(url)cv=url;
   else if(cs.clear||!oldId)cv='';
   if(oldId&&cv!==oc){await del('images',oldId);delete imgs[oldId]}
   let vf=old&&old.vfile||'';if((vS.clear||ty!=='video')&&vf){await del('images',vf);URL.revokeObjectURL(imgs[vf]);delete imgs[vf];delete blobs[vf];isVid.delete(vf);vf=''}
-  if(ty==='video'&&vS.file){if(vS.file.size>200e6)throw new Error('El video pesa más de 200 MB.');const nid='vf'+uid();await put('images',{id:nid,blob:vS.file,vid:true,priv:PRIV});if(vf){await del('images',vf);URL.revokeObjectURL(imgs[vf]);isVid.delete(vf)}vf=nid;imgs[nid]=URL.createObjectURL(vS.file);blobs[nid]=vS.file;isVid.add(nid)}
+  if(ty==='video'&&vS.file){if(vS.file.size>200e6)throw new Error('El video pesa más de 200 MB.');const nid='vf'+uid();await put('images',{id:nid,blob:vS.file,vid:true});if(vf){await del('images',vf);URL.revokeObjectURL(imgs[vf]);isVid.delete(vf)}vf=nid;imgs[nid]=URL.createObjectURL(vS.file);blobs[nid]=vS.file;isVid.add(nid)}
   let pr=old&&old.prev||'';
   if(pS.clear&&pr){await del('images',pr);URL.revokeObjectURL(imgs[pr]);delete imgs[pr];delete blobs[pr];isVid.delete(pr);pr=''}
-  if(pS.file){if(pS.file.size>60e6)throw new Error('El video de presentación pesa más de 60 MB.');const nid='pv'+uid();await put('images',{id:nid,blob:pS.file,vid:true,priv:PRIV});if(pr){await del('images',pr);URL.revokeObjectURL(imgs[pr]);isVid.delete(pr);delete blobs[pr]}pr=nid;imgs[nid]=URL.createObjectURL(pS.file);blobs[nid]=pS.file;isVid.add(nid)}
-  const g={type:ty,last:old?old.last||0:0,vfile:vf,prev:pr,id:old?old.id:uid(),name:name.slice(0,120),cat:E.cat.value.trim().slice(0,40),note:E.note.value.trim().slice(0,300),link,fav:E.fav.checked,cover:cv,priv:PRIV};
+  if(pS.file){if(pS.file.size>60e6)throw new Error('El video de presentación pesa más de 60 MB.');const nid='pv'+uid();await put('images',{id:nid,blob:pS.file,vid:true});if(pr){await del('images',pr);URL.revokeObjectURL(imgs[pr]);isVid.delete(pr);delete blobs[pr]}pr=nid;imgs[nid]=URL.createObjectURL(pS.file);blobs[nid]=pS.file;isVid.add(nid)}
+  const g={type:ty,last:old?old.last||0:0,vfile:vf,prev:pr,id:old?old.id:uid(),name:name.slice(0,120),cat:E.cat.value.trim().slice(0,40),note:E.note.value.trim().slice(0,300),link,fav:E.fav.checked,cover:cv};
   await put('games',g);games=games.filter(x=>x.id!==g.id).concat(g);
  }catch(x){return err('No se pudo guardar: '+(x.message||x))}
  show('#gf',false);render();toast('Guardado ✓');
@@ -223,10 +207,10 @@ async function delTheme(t){if(!confirm(`¿Borrar el tema «${t.id}»?`))return;a
 $('#tr').onclick=async()=>{if(!confirm('¿Restaurar el tema predeterminado? Tus juegos no se tocan.'))return;const old=BGK.map(k=>S[k]);S={...DEF};saveS();sync();bgRows();await gcAll(old);toast('Tema predeterminado restaurado')};
 
 /* ---------- Exportar / importar ---------- */
-$('#ex').onclick=async()=>{if(PRIV)return toast('El modo privado no se exporta (por seguridad).',1);
+$('#ex').onclick=async()=>{
  try{
-  const ims=(await all('images')).filter(i=>!i.blob&&!i.priv),skipped=isVid.size;
-  const d={app:'psp-universe',v:2,date:new Date().toISOString(),meta:M,settings:S,games:games.filter(g=>!g.priv),themes:await all('themes'),images:ims};
+  const ims=(await all('images')).filter(i=>!i.blob),skipped=isVid.size;
+  const d={app:'psp-universe',v:2,date:new Date().toISOString(),meta:M,settings:S,games,themes:await all('themes'),images:ims};
   const blob=new Blob([JSON.stringify(d)],{type:'application/json'}),f=new File([blob],'psp-universe-copia.json',{type:'application/json'});
   if(skipped)toast('Aviso: los fondos de video no entran en la copia.');
   if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]});return}catch(e){if(e.name==='AbortError')return}}
@@ -249,9 +233,6 @@ function cleanS(x,ids){
   else if(k==='pack'){if(['soft','glass','arcade'].includes(v))o[k]=v}
   else if(k==='tf'){if(FONTS[v])o[k]=v}
   else if(k==='perf'){if(['full','lite'].includes(v))o[k]=v}
-  else if(k==='lfx'){if(['zoom','spin','flip','none'].includes(v))o[k]=v}
-  else if(k==='pins'||k==='recent'){if(Array.isArray(v))o[k]=v.filter(x=>typeof x==='string'&&x.length<20).slice(0,12)}
-  else if(k==='mut'){if(/^[\w-]{1,40}$/.test(v))o[k]=v}
   else if(BGK.includes(k)){if(ids.has(v))o[k]=v}
   else o[k]=v}
  return o;
@@ -261,27 +242,28 @@ function clean(d){
  if(d.games.length>2000)throw new Error('Demasiados juegos.');
  const s=x=>typeof x==='string'?x:'',okId=x=>/^[\w-]{1,40}$/.test(s(x));
  const im=(Array.isArray(d.images)?d.images:[]).filter(i=>i&&okId(i.id)&&/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s(i.data))&&i.data.length<6e6).map(i=>({id:i.id,data:i.data})),ids=new Set(im.map(i=>i.id));
- const gs=d.games.filter(g=>g&&okId(g.id)&&s(g.name).trim()).map(g=>{const c=s(g.cover),ty=ALLT.includes(g.type)?g.type:'psp';return{type:ty,last:Number.isFinite(g.last)?g.last:0,id:g.id,name:s(g.name).trim().slice(0,120),cat:s(g.cat).slice(0,40),note:s(g.note).slice(0,300),link:okFor(ty,s(g.link))?g.link:'',fav:g.fav===true,cover:c.startsWith('img:')?(ids.has(c.slice(4))?c:''):/^https?:\/\/\S+$/i.test(c)?c:''}});
+ const gs=d.games.filter(g=>g&&okId(g.id)&&s(g.name).trim()).map(g=>{const c=s(g.cover),ty=['psp','game','web','video'].includes(g.type)?g.type:'psp';return{type:ty,last:Number.isFinite(g.last)?g.last:0,id:g.id,name:s(g.name).trim().slice(0,120),cat:s(g.cat).slice(0,40),note:s(g.note).slice(0,300),link:okFor(ty,s(g.link))?g.link:'',fav:g.fav===true,cover:c.startsWith('img:')?(ids.has(c.slice(4))?c:''):/^https?:\/\/\S+$/i.test(c)?c:''}});
  const th=(Array.isArray(d.themes)?d.themes:[]).filter(t=>t&&s(t.id).trim()).slice(0,100).map(t=>({...cleanS(t,ids),id:s(t.id).trim().slice(0,40)}));
  const m=d.meta||{};
- return{games:gs,im,themes:th,S:cleanS(d.settings,ids),M:{title:s(m.title).slice(0,60)||'Game Space',sub:s(m.sub).slice(0,80),view:VIEWS.includes(m.view)?m.view:'grid',secs:cleanSecs(m.secs),acts:cleanActs(m.acts)}};
+ return{games:gs,im,themes:th,S:cleanS(d.settings,ids),M:{title:s(m.title).slice(0,60)||'PSP Universe',sub:s(m.sub).slice(0,80),view:VIEWS.includes(m.view)?m.view:'grid',secs:cleanSecs(m.secs),acts:cleanActs(m.acts)}};
 }
 $('#imf').onchange=async e=>{
- const f=e.target.files[0];e.target.value='';if(!f)return;if(PRIV)return toast('Sal del modo privado para importar.',1);
+ const f=e.target.files[0];e.target.value='';if(!f)return;
  try{
   if(f.size>80e6)throw new Error('Archivo demasiado grande.');
   const d=clean(JSON.parse(await f.text()));
-  if(!confirm(`Vas a REEMPLAZAR tu biblioteca actual (${vis().length} juegos) por la copia (${d.games.length} juegos, ${d.im.length} imágenes). Tus fondos de video actuales se perderán.\n¿Continuar?`))return;
-  for(const g of games.filter(g=>!g.priv))await del('games',g.id);for(const i of await all('images'))if(!i.priv&&!i.mus)await del('images',i.id);await clr('themes');
+  if(!confirm(`Vas a REEMPLAZAR tu biblioteca actual (${games.length} juegos) por la copia (${d.games.length} juegos, ${d.im.length} imágenes). Tus fondos de video actuales se perderán.\n¿Continuar?`))return;
+  for(const s of['games','images','themes'])await clr(s);
   for(const g of d.games)await put('games',g);for(const i of d.im)await put('images',i);for(const t of d.themes)await put('themes',t);
-  await loadAll();S=d.S;M=d.M;lsSet('psp-s',S);saveM();
+  isVid.forEach(id=>URL.revokeObjectURL(imgs[id]));isVid=new Set();
+  games=d.games;imgs=Object.fromEntries(d.im.map(i=>[i.id,i.data]));S=d.S;M=d.M;lsSet('psp-s',S);lsSet('psp-m',M);
   sync();$$('[data-m]').forEach(el=>el.value=M[el.dataset.m]);lastBg=null;apply();orient();head();view();themes();bgRows();render();toast('Copia importada ✓');
  }catch(x){toast('No se pudo importar: '+(x.message||x),1)}
 };
 
 /* ---------- Eventos y arranque ---------- */
 $('#bView').onclick=()=>{const cur=sc(sec).view||M.view;setSec(sec,{view:VIEWS[(VIEWS.indexOf(cur)+1)%3]});view();snd('swap')};
-$('#bSet').onclick=()=>{musTab();$('#st').textContent='';sync();themes();bgRows();secUI();actsUI();showLog();show('#ds')};
+$('#bSet').onclick=()=>{$('#st').textContent='';sync();themes();bgRows();secUI();actsUI();showLog();show('#ds')};
 $('#dc').onclick=()=>show('#ds',false);
 $('#amc').onclick=()=>show('#am',false);
 $('#ame').onclick=()=>{show('#am',false);edit(curG)};
@@ -295,19 +277,16 @@ function centerCard(c){const l=$('#lib');l.scrollTo({left:c.offsetLeft+c.offsetW
 function tap(g,c){
  const car=$('#lib').className==='v-car',cen=c.classList.contains('cen');
  if(car&&!cen){centerCard(c);snd('swap');return}
- if(c.classList.contains('flip')){const v=c.querySelector('.pvb video');if(v&&v.paused){v.play().catch(()=>{});return}}
  if(g.prev&&imgs[g.prev]&&(car||c.classList.contains('flip'))){
   if(c._tm){clearTimeout(c._tm);c._tm=0;flipCard(g,c);return}
-  c._tm=setTimeout(()=>{c._tm=0;c.classList.contains('flip')?flipCard(g,c):launch(g,c)},300);return}
- launch(g,c)}
-function endFlip(c){c.classList.remove('flip');setTimeout(()=>{if(c.classList.contains('flip'))return;const v=c.querySelector('.pvb video');if(v){v.pause();v.removeAttribute('src');v.remove()}},750)}
-function flipCard(g,c,auto){
+  c._tm=setTimeout(()=>{c._tm=0;c.classList.contains('flip')?flipCard(g,c):play(g)},300);return}
+ play(g)}
+function endFlip(c){const cv=c.firstChild;cv.classList.add('fx');setTimeout(()=>cv.classList.remove('fx'),500);setTimeout(()=>{c.classList.remove('flip');const v=cv.querySelector('video');if(v){v.pause();v.removeAttribute('src');v.remove()}},220)}
+function flipCard(g,c){
  if(c.classList.contains('flip'))return endFlip(c);
  if(!g.prev||!imgs[g.prev])return;
- const box=c.querySelector('.pvb');box.replaceChildren();
- const v=h('video',{muted:'',loop:'',playsinline:'',autoplay:'',preload:'auto'});v.muted=!!auto||!S.psound;v.playsInline=true;v.src=imgs[g.prev];box.append(v);
- const go=()=>v.play().catch(()=>{});v.addEventListener('canplay',go,{once:true});go();setTimeout(()=>{if(v.paused)go()},700);
- c.classList.add('flip');
+ const cv=c.firstChild;cv.classList.add('fx');setTimeout(()=>cv.classList.remove('fx'),500);
+ setTimeout(()=>{c.classList.add('flip');const v=h('video',{loop:'',playsinline:''});v.muted=!S.psound;v.playsInline=true;v.src=imgs[g.prev];cv.append(v);v.play().catch(()=>{})},220);
 }
 const pvsync=g=>{$('#pvn').textContent=pS.file?pS.file.name:(g&&g.prev&&!pS.clear?'Video de presentación guardado ✓':'')};
 let cm=[],cw=0,lastCi=-1,apT=0;
@@ -317,97 +296,48 @@ function fitAll(cs){cs.forEach(c=>{const b=c.querySelector('.inf b'),t=c.querySe
 function applyCar(){
  setCmp();
  const l=$('#lib'),cs=[...l.children].filter(c=>c.classList.contains('card'));
- if(l.className!=='v-car'){l.style.paddingLeft=l.style.paddingRight=l.style.paddingTop=l.style.paddingBottom='';l.parentElement.style.overflowY='';cs.forEach(c=>{c.style.transform='';c.style.zIndex='';c.style.removeProperty('--dim');c.classList.remove('cen')});cm=[];fitAll(cs);return}
+ if(l.className!=='v-car'){l.style.paddingLeft=l.style.paddingRight='';l.parentElement.style.overflowY='';cs.forEach(c=>{c.style.transform='';c.style.boxShadow='';c.style.zIndex='';c.style.removeProperty('--dim');c.classList.remove('cen')});cm=[];fitAll(cs);return}
  if(!cs.length){cm=[];return}
- const m=l.parentElement,A=$('#app'),sab=A.classList.contains('r0')?(parseFloat(getComputedStyle($('#sab')).paddingBottom)||0):12,base=m.clientWidth-32,availH=A.clientHeight-m.offsetTop-sab-6,Z=S.czoom/100,ZZ=Z*1.07;
- let w=Math.max(80,Math.min(base*.46,S.ccover*1.15));
- const setW=x=>l.style.setProperty('--cw',x+'px');
- setW(w);m.style.overflowY='hidden';l.style.paddingTop=l.style.paddingBottom='0px';
- for(let i=0;i<4;i++){const need=cs[0].offsetHeight*ZZ+32;if(need<=availH||w<=80)break;w=Math.max(80,w*availH/need*.97);setW(w)}
- cw=w;
- const ph=Math.ceil(cs[0].offsetHeight*(ZZ-1)/2)+8;l.style.paddingTop=l.style.paddingBottom=ph+'px';
+ const m=l.parentElement,[rw,rh]=S.ratio.split('/').map(Number),base=m.clientWidth-32,availH=$('#app').clientHeight-m.offsetTop-14;
+ cw=Math.max(90,Math.min(base*.46,S.ccover*1.15,(availH-110)/(rh/rw)));
+ l.style.setProperty('--cw',cw+'px');m.style.overflowY='hidden';
  const pad=Math.max(16,(m.clientWidth-cw)/2)+'px';
  if(l.style.paddingLeft!==pad){l.style.paddingLeft=pad;l.style.paddingRight=pad}
  cm=cs.map(c=>({c,x:c.offsetLeft+cw/2,v:0,cn:false}));fitAll(cs);lastCi=-1;carFrame();
- if($('#app').classList.contains('big'))fitText($('#bigt'),S.tfs,12);
+ const bt=$('#bigt');if($('#app').classList.contains('big'))fitText(bt,S.tfs,12);
 }
 function carFrame(){
  const l=$('#lib');if(!cm.length||l.className!=='v-car')return;
- const mid=l.scrollLeft+l.clientWidth/2,stp=cw*.85,Z=S.czoom/100,A=S.cang,D=S.cdim/100;let best=0,bd=1e9;
+ const mid=l.scrollLeft+l.clientWidth/2,stp=cw*.85,Z=S.czoom/100,A=S.cang,D=S.cdim/100,T=S.edgeT;let best=0,bd=1e9;
  cm.forEach((o,i)=>{const t=(o.x-mid)/stp,at=Math.abs(t),c=o.c;
   if(at<bd){bd=at;best=i}
-  if(at>3.2){if(o.v){c.style.transform='';o.v=0}if(o.cn){o.cn=false;c.classList.remove('cen')}return}
+  if(at>3.2){if(o.v){c.style.transform='';c.style.boxShadow='';o.v=0}if(o.cn){o.cn=false;c.classList.remove('cen')}return}
   const a1=Math.min(at,1),a2=Math.max(0,Math.min(at-1,1)),isC=at<.5;o.v=1;
   c.style.transform=`perspective(700px) rotateY(${(-Math.max(-1,Math.min(1,t))*A).toFixed(1)}deg) scale(${(Z-(Z-.86)*a1-.1*a2).toFixed(3)})`;
   c.style.zIndex=Math.round(10-at*3);c.style.setProperty('--dim',(D*a1+.15*a2).toFixed(2));
+  c.style.boxShadow=T&&a1>.05?`${((t<0?-1:1)*T*a1).toFixed(1)}px 0 0 ${S.edgeC}, var(--sh)`:'';
   if(isC!==o.cn){o.cn=isC;c.classList.toggle('cen',isC)}});
  if(best!==lastCi){const first=lastCi<0,c=cm[best].c;lastCi=best;
   document.querySelectorAll('.card.flip').forEach(x=>{if(x!==c||first)endFlip(x)});
   if(!first)snd('tick');
   const b=$('#bigt');b.textContent=c.dataset.n||'';if($('#app').classList.contains('big'))fitText(b,S.tfs,12);
-  clearTimeout(apT);if(S.pdelay>0&&c._g&&c._g.prev)apT=setTimeout(()=>{if(cm[lastCi]&&cm[lastCi].c===c&&!c.classList.contains('flip'))flipCard(c._g,c,true)},S.pdelay*1000)}
+  clearTimeout(apT);if(S.pdelay>0&&c._g&&c._g.prev)apT=setTimeout(()=>{if(cm[lastCi]&&cm[lastCi].c===c&&!c.classList.contains('flip'))flipCard(c._g,c)},S.pdelay*1000)}
 }
 $('#lib').addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;carFrame()})},{passive:true});
 addEventListener('resize',()=>setTimeout(applyCar,60));
 $('#pvf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;pS={file:f,clear:false};pvsync(editing)};
 $('#pvc').onclick=()=>{pS={file:null,clear:true};pvsync(editing)};
-
-/* ---------- Inicio de juego, cristales flotantes ---------- */
-let curR=0,curW=0,curH=0,sh=[],fxRaf=0,fxT=0;
-function launch(g,c){
- if(!c||S.lfx==='none'){play(g);return}
- snd('swap');c.classList.add('go','go-'+S.lfx);
- setTimeout(()=>{c.classList.remove('go','go-'+S.lfx);play(g)},430)}
-function loc(e){const r=curR;return r===90?{x:e.clientY,y:curW-e.clientX}:r===-90?{x:curH-e.clientY,y:e.clientX}:r===180?{x:curW-e.clientX,y:curH-e.clientY}:{x:e.clientX,y:e.clientY}}
-function fxResize(){const a=$('#app'),d=Math.min(devicePixelRatio||1,2);let ch=false;for(const id of['fxb','fxf']){const c=$('#'+id),w=Math.round(a.clientWidth*d),h2=Math.round(a.clientHeight*d);if(c.width!==w||c.height!==h2){c.width=w;c.height=h2;ch=true}c._d=d}if(ch)drawFx()}
-function buildFx(){
- cancelAnimationFrame(fxRaf);fxRaf=0;fxT=0;sh=[];fxResize();
- const n=Math.min(S.fxn,S.perf==='lite'?8:30);
- if(S.fx&&n>0){const a=$('#app'),W=a.clientWidth||innerWidth,H=a.clientHeight||innerHeight;
-  for(let i=0;i<n;i++){
-   const front=i%3===0,s=12+Math.random()*(front?30:48),k=3+Math.floor(Math.random()*3),pts=[];
-   for(let j=0;j<k;j++){const an=j/k*6.283+Math.random()*.9,rr=s*(.45+Math.random()*.55);pts.push([Math.cos(an)*rr,Math.sin(an)*rr])}
-   const bx=(Math.random()-.5)*.35,by=(Math.random()-.5)*.35;
-   sh.push({pts,s,front,x:Math.random()*W,y:Math.random()*H,vx:bx,vy:by,bx,by,r:Math.random()*6.28,vr:(Math.random()-.5)*.006,op:(.35+Math.random()*.65)*S.fxo/100,fz:false,drag:false})}}
- drawFx();if(sh.length&&!RM.matches)fxRaf=requestAnimationFrame(fxLoop);
-}
-function drawFx(){
- for(const id of['fxb','fxf']){const c=$('#'+id),x=c.getContext('2d'),d=c._d||1;x.setTransform(d,0,0,d,0,0);x.clearRect(0,0,c.width,c.height);
-  for(const o of sh){if(o.front!==(id==='fxf'))continue;
-   x.save();x.translate(o.x,o.y);x.rotate(o.r);x.globalAlpha=o.op;x.beginPath();o.pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.closePath();x.fillStyle='rgba(190,225,255,.16)';x.fill();x.strokeStyle='rgba(225,242,255,.75)';x.lineWidth=1;x.stroke();x.restore()}}
-}
-function fxLoop(t){
- fxRaf=requestAnimationFrame(fxLoop);
- if(document.hidden||!sh.length){fxT=0;return}
- const dt=Math.min(40,t-(fxT||t))/16.7;fxT=t;const a=$('#app'),W=a.clientWidth,H=a.clientHeight;
- for(const o of sh){if(o.drag)continue;
-  if(o.fz){o.vx*=.9;o.vy*=.9}else{o.vx+=(o.bx-o.vx)*.01*dt;o.vy+=(o.by-o.vy)*.01*dt;o.r+=o.vr*dt}
-  o.x+=o.vx*dt;o.y+=o.vy*dt;const m=o.s*1.2;
-  if(o.x<-m)o.x=W+m;else if(o.x>W+m)o.x=-m;if(o.y<-m)o.y=H+m;else if(o.y>H+m)o.y=-m}
- drawFx();
-}
-let dr=null,dmv=0,dlx=0,dly=0,dlt=0,swallow=false;
-const sheetOpen=()=>!!document.querySelector('.sheet.on');
-function hit(q){for(let i=sh.length-1;i>=0;i--){const o=sh[i];if(!o.front)continue;const dx=q.x-o.x,dy=q.y-o.y;if(dx*dx+dy*dy<o.s*o.s*1.1)return o}return null}
-document.addEventListener('touchstart',e=>{if(!S.fx||!S.fxi||!sh.length||sheetOpen())return;if(hit(loc(e.touches[0])))e.preventDefault()},{capture:true,passive:false});
-document.addEventListener('pointerdown',e=>{if(!S.fx||!S.fxi||!sh.length||sheetOpen())return;const q=loc(e),o=hit(q);if(!o)return;e.stopPropagation();e.preventDefault();dr=o;dlx=q.x;dly=q.y;dmv=0;o.drag=true;o.vx=o.vy=0;dlt=performance.now()},true);
-document.addEventListener('pointermove',e=>{if(!dr)return;e.preventDefault();const q=loc(e),n=performance.now(),d=Math.max(1,n-dlt)/16.7;dr.vx=(q.x-dlx)/d;dr.vy=(q.y-dly)/d;dr.x+=q.x-dlx;dr.y+=q.y-dly;dmv+=Math.abs(q.x-dlx)+Math.abs(q.y-dly);dlx=q.x;dly=q.y;dlt=n;drawFx()},{passive:false});
-const dup=()=>{if(!dr)return;const o=dr;dr=null;o.drag=false;swallow=true;setTimeout(()=>swallow=false,350);
- if(dmv<6){o.fz=!o.fz;if(o.fz){o.vx=o.vy=0}else{o.vx=o.bx;o.vy=o.by}}else{o.fz=false;o.vx=Math.max(-14,Math.min(14,o.vx));o.vy=Math.max(-14,Math.min(14,o.vy))}};
-document.addEventListener('pointerup',dup,true);document.addEventListener('pointercancel',dup,true);
-document.addEventListener('click',e=>{if(swallow){e.stopPropagation();e.preventDefault()}},true);
 const showLog=()=>{$('#logv').textContent=LOG.join('\n')||'Sin errores registrados.'};
 $('#logc').onclick=()=>navigator.clipboard.writeText(LOG.join('\n')).then(()=>toast('Registro copiado ✓')).catch(()=>toast('No se pudo copiar.',1));
 $('#logx').onclick=()=>{LOG.length=0;try{localStorage.removeItem('psp-log')}catch{}showLog()};
-$('#safe').onclick=()=>{Object.assign(S,{canim:'none',sfx:false,blur:0,animBg:false,perf:'lite',czoom:100,cang:20,pblur:0,fx:false});saveS();sync();buildFx();toast('Modo seguro activado ✓')};
+$('#safe').onclick=()=>{Object.assign(S,{canim:'none',sfx:false,blur:0,animBg:false,perf:'lite',czoom:100,cang:20,pblur:0});saveS();sync();toast('Modo seguro activado ✓')};
 document.addEventListener('visibilitychange',()=>{const v=$('#bg video');if(v&&document.hidden)v.pause()});
 
 
 /* ---------- Tipos de elemento ---------- */
 const LBL={psp:['Enlace profundo de PPSSPP','ppsspp://open?path=…'],game:['Atajo o enlace de la app','shortcuts://run-shortcut?name=…'],web:['Dirección de la página','https://…'],video:['Enlace del video (opcional si importas uno)','https://…']};
 const ERR={psp:'Enlace no válido. Debe empezar por ppsspp://open?path= (en PPSSPP usa «Copiar enlace profundo»).',game:'Enlace no válido. Usa shortcuts://run-shortcut?name=… u otro enlace de app (esquema://…).',web:'La dirección debe empezar por https://',video:'El enlace del video debe empezar por https://'};
-CON.forEach(c=>{LBL[c]=LBL.game;ERR[c]=ERR.game});LBL.online=LBL.web;ERR.online=ERR.web;
-const okFor=(t,l)=>!l||(t==='psp'?okLink(l):(t==='game'||CON.includes(t))?/^[a-z][a-z0-9+.-]{1,30}:\/\/\S+$/i.test(l)&&!/^(javascript|data|file|blob):/i.test(l):/^https?:\/\/\S+$/i.test(l));
+const okFor=(t,l)=>!l||(t==='psp'?okLink(l):t==='game'?/^[a-z][a-z0-9+.-]{1,30}:\/\/\S+$/i.test(l)&&!/^(javascript|data|file|blob):/i.test(l):/^https?:\/\/\S+$/i.test(l));
 function tsync(g){const E=$('#fm').elements,t=E.type.value;$('#ll').textContent=LBL[t][0];E.link.placeholder=LBL[t][1];$('#vrow').hidden=t!=='video';$('#vname').textContent=vS.file?vS.file.name:(g&&g.vfile&&!vS.clear?'Video importado ✓':'')}
 $('#fm').elements.type.onchange=()=>tsync(editing);
 $('#vf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;vS={file:f,clear:false};tsync(editing)};
@@ -416,19 +346,15 @@ function player(src){const v=$('#plv');v.src=src;show('#pl');v.play().catch(()=>
 $('#plc').onclick=()=>{const v=$('#plv');v.pause();v.removeAttribute('src');v.load();show('#pl',false)};
 
 /* ---------- Secciones ---------- */
-const CON=['nes','snes','n64','gbc','gba','nds'],ALLT=['psp','game','online','web','video',...CON],ALLIN=['psp','game','online',...CON];
-const SKN=['rec','all','game','online','web','video','psp','nes','n64','snes','gbc','gba','nds'],SKP=['rec','video','web','online','game','psp','nes','snes','n64','gbc','gba','nds'],SKALL=SKN;let SK=SKN;
-const SD={rec:['Recientes','🕘'],all:['Todo','🏠'],game:['Juegos','📱'],online:['Juegos online','🌍'],web:['Páginas web','🌐'],video:['Videos','🎬'],psp:['PSP','🎮'],nes:['Nintendo NES','🕹️'],n64:['Nintendo 64','🎲'],snes:['Super Nintendo','🎛️'],gbc:['Game Boy Color','🌈'],gba:['Game Boy Advance','📟'],nds:['Nintendo DS','📱']};
-const vis=()=>games.filter(g=>!!g.priv===PRIV);
-const saveM=()=>lsSet(PRIV?'psp-mp':'psp-m',M);
+const SK=['rec','all','psp','game','web','video'],SD={rec:['Recientes','🕘'],all:['Todo','🏠'],psp:['PSP','🎮'],game:['Juegos','📱'],web:['Web','🌐'],video:['Videos','🎬']};
 const sc=k=>{const x=(M.secs||{})[k]||{};return{n:x.n||SD[k][0],e:x.e||SD[k][1],on:x.on!==false,view:x.view||''}};
-const setSec=(k,p)=>{M.secs=M.secs||{};M.secs[k]={...(M.secs[k]||{}),...p};saveM()};
+const setSec=(k,p)=>{M.secs=M.secs||{};M.secs[k]={...(M.secs[k]||{}),...p};lsSet('psp-m',M)};
 function secUI(){
  $('#secrows').replaceChildren(...SK.map(k=>{const c=sc(k),cb=h('input',{type:'checkbox',onchange:e=>{setSec(k,{on:e.target.checked});render()}});cb.checked=c.on;
   return h('div',{class:'sr'},h('input',{value:c.e,maxlength:'4',class:'se',oninput:e=>{setSec(k,{e:e.target.value});render()}}),h('input',{value:c.n,maxlength:'20',oninput:e=>{setSec(k,{n:e.target.value});render()}}),
    h('select',{onchange:e=>{setSec(k,{view:e.target.value});view()}},...[['','Vista global'],['list','Lista'],['grid','Cuadrícula'],['car','Carrusel']].map(([v,l])=>{const o=h('option',{value:v},l);if(v===c.view)o.selected=true;return o})),cb)}));
 }
-function cleanSecs(x){const o={},s=v=>typeof v==='string'?v:'';if(x&&typeof x==='object')for(const k of SKALL){const c=x[k];if(c&&typeof c==='object')o[k]={n:s(c.n).slice(0,20),e:s(c.e).slice(0,4),on:c.on!==false,view:VIEWS.includes(c.view)?c.view:''}}return o}
+function cleanSecs(x){const o={},s=v=>typeof v==='string'?v:'';if(x&&typeof x==='object')for(const k of SK){const c=x[k];if(c&&typeof c==='object')o[k]={n:s(c.n).slice(0,20),e:s(c.e).slice(0,4),on:c.on!==false,view:VIEWS.includes(c.view)?c.view:''}}return o}
 
 /* ---------- Acciones en cadena (botón ⚡) ---------- */
 const AT={theme:'Aplicar tema',orient:'Orientación',wait:'Esperar',bg:'Recargar fondo'};
@@ -438,7 +364,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function cleanActs(x){return Array.isArray(x)?x.filter(a=>a&&AT[a.t]).slice(0,12).map(a=>({t:a.t,v:a.t==='wait'?Math.min(Math.max(+a.v||0,0),5000):typeof a.v==='string'?a.v.slice(0,40):''})):defActs()}
 const opt=(v,l,sel)=>{const o=h('option',{value:v},l);if(sel)o.selected=true;return o};
 async function actsUI(){
- const TL=(await all('themes').catch(()=>[])).map(t=>t.id),A=acts(),sv=()=>saveM();
+ const TL=(await all('themes').catch(()=>[])).map(t=>t.id),A=acts(),sv=()=>lsSet('psp-m',M);
  $('#acts').replaceChildren(...A.map((a,i)=>{
   const ts=h('select',{onchange:e=>{a.t=e.target.value;a.v=a.t==='wait'?700:'';sv();actsUI()}},...Object.entries(AT).map(([k,l])=>opt(k,l,k===a.t)));
   const list=a.t==='theme'?[['','— elegir tema —'],...TL.map(x=>[x,x])]:a.t==='orient'?[['auto','Automático'],['v','Vertical'],['h','Horizontal'],['hi','Horizontal invertido']]:null;
@@ -456,16 +382,16 @@ async function runActs(){
  }toast('Acciones listas ✓')}catch(e){toast('No se pudo completar la cadena.',1)}
  running=false;
 }
-$('#actadd').onclick=()=>{acts().push({t:'orient',v:'h'});saveM();actsUI()};
+$('#actadd').onclick=()=>{acts().push({t:'orient',v:'h'});lsSet('psp-m',M);actsUI()};
 $('#actrun').onclick=runActs;
-$('#actreset').onclick=()=>{M.acts=defActs();saveM();actsUI()};
+$('#actreset').onclick=()=>{M.acts=defActs();lsSet('psp-m',M);actsUI()};
 let lp=0,pressT;const bA=$('#bAct');
 bA.addEventListener('pointerdown',()=>{lp=0;pressT=setTimeout(()=>{lp=1;$('#bSet').click();$('#tabs button[data-t=acc]').click()},650)});
 ['pointerup','pointerleave','pointercancel'].forEach(ev=>bA.addEventListener(ev,()=>clearTimeout(pressT)));
 bA.onclick=()=>{if(lp){lp=0;return}runActs()};
 
 /* ---------- Al volver a la app: recalcular tamaño y recargar fondos ---------- */
-function resume(){Object.keys(blobs).forEach(id=>{if(id.slice(0,2)==='mu')return;try{URL.revokeObjectURL(imgs[id])}catch{}imgs[id]=URL.createObjectURL(blobs[id])});lastBg=null;orient();apply();fxResize();if(S.fx&&!sh.length)buildFx();drawFx();cancelAnimationFrame(fxRaf);fxRaf=sh.length&&!RM.matches?requestAnimationFrame(fxLoop):0}
+function resume(){Object.keys(blobs).forEach(id=>{try{URL.revokeObjectURL(imgs[id])}catch{}imgs[id]=URL.createObjectURL(blobs[id])});lastBg=null;orient();apply()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(resume,120)});
 addEventListener('pageshow',()=>setTimeout(resume,120));
 
@@ -484,141 +410,10 @@ document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closes
 
 
 document.addEventListener('pointerdown',()=>{const v=$('#bg video');if(v&&v.paused&&!RM.matches)v.play().catch(()=>{})});
-/* ---------- Carga, ajustes rápidos ---------- */
-async function loadAll(){
- Object.keys(blobs).forEach(id=>{try{URL.revokeObjectURL(imgs[id])}catch{}});
- games=await all('games');imgs={};blobs={};kinds={};tracks=[];isVid=new Set();
- (await all('images')).forEach(i=>{
-  if(i.mus){tracks.push({id:i.id,name:i.name||'Mi música',blob:i.blob});return}
-  if(i.blob){const k=i.kind||'vid';kinds[i.id]=k;if(k==='vid')isVid.add(i.id);blobs[i.id]=i.blob;imgs[i.id]=URL.createObjectURL(i.blob)}else imgs[i.id]=i.data});
-}
-function touchRec(k){const a=(S.recent||[]).filter(x=>x!==k);a.unshift(k);S.recent=a.slice(0,8)}
-function onK(el){const k=el.dataset.k,c=el.type==='checkbox';S[k]=c?el.checked:el.type==='range'?+el.value:el.value;if(k==='bg')S.mode='custom';if(k==='mode'&&PRE[S.mode])S.bg=PRE[S.mode];touchRec(k);saveS();sync();if(k==='showCat'||k==='showNote')render();if(['czoom','cang','cdim','cover','gap'].includes(k))applyCar();if(k==='perf'||k.slice(0,2)==='fx')buildFx()}
-function togglePin(k){const a=S.pins||[];S.pins=a.includes(k)?a.filter(x=>x!==k):[...a,k];lsSet('psp-s',S);drawer()}
-function mkCtl(k,pinned){
- const src=$('#ds [data-k="'+k+'"]');if(!src)return null;
- const lb=src.closest('label'),nm=lb?[...lb.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim():k,t=src.type;let c;
- if(src.tagName==='SELECT')c=h('select',{},...[...src.options].map(o=>opt(o.value,o.textContent,0)));
- else{c=h('input',{type:t});['min','max'].forEach(a=>src.hasAttribute(a)&&c.setAttribute(a,src.getAttribute(a)))}
- c.dataset.k=k;c[t==='checkbox'?'checked':'value']=S[k];c.oninput=()=>onK(c);
- return h('div',{class:'row'},h('span',{},nm),c,h('button',{class:'xs','aria-label':'Anclar',onclick:()=>togglePin(k)},pinned?'📌':'📍'));
-}
-function drawer(){
- const p=S.pins||[],rc=(S.recent||[]).filter(k=>!p.includes(k));
- $('#drb').replaceChildren(h('h3',{},'📌 Anclados'),...p.map(k=>k==='music'?musicUI():mkCtl(k,true)).filter(Boolean),
-  h('h3',{},'Ajustes recientes'),...(rc.length?rc.map(k=>mkCtl(k,false)).filter(Boolean):[h('p',{class:'mut'},'Aquí aparecerán los ajustes que cambies.')]),
-  h('button',{class:'sec',onclick:()=>togglePin('music')},p.includes('music')?'Desanclar música':'📍 Anclar música'));
-}
-$('#bMenu').onclick=()=>{drawer();show('#dr')};
-$('#drc').onclick=()=>show('#dr',false);
-$('#dr').onclick=e=>{if(e.target.id==='dr')show('#dr',false)};
-$('#bInt').onclick=()=>{const on=document.body.classList.toggle('bgint');$('#bInt').textContent=on?'✕ Volver':'🎯 Tocar fondo'};
-
-/* ---------- Música de fondo (generada en vivo = sin fin) ---------- */
-const MP={p0:{n:'Espacio infinito',r:[110,87.31,130.81,98],s:[0,3,5,7,10,12,15,19],f:1300,b:2},p1:{n:'Cristal nocturno',r:[146.83,110,123.47,98],s:[0,2,4,7,9,12,14,16],f:2600,b:3},p2:{n:'Abismo profundo',r:[65.41,58.27,77.78,51.91],s:[0,3,7,10,12,14],f:700,b:3}};
-const MU={on:false,bus:null,inp:null,src:null,el:null,t:0,i:0,g:0,cur:''};
-const trList=()=>[...Object.entries(MP).map(([id,p])=>({id,name:p.n})),...tracks];
-function muGraph(){
- if(MU.bus)return;
- const lp=AC.createBiquadFilter(),wet=AC.createGain(),bus=AC.createGain();lp.type='lowpass';lp.frequency.value=1400;wet.gain.value=.55;bus.gain.value=0;
- [[.43,.5],[.71,.46],[1.03,.42]].forEach(([d,f])=>{const dl=AC.createDelay(2),fb=AC.createGain();dl.delayTime.value=d;fb.gain.value=f;lp.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(wet)});
- lp.connect(bus);wet.connect(bus);bus.connect(AC.destination);MU.bus=bus;MU.inp=lp;
-}
-const muVol=()=>{if(MU.bus)MU.bus.gain.setTargetAtTime((S.muv/100)**2*1.2,AC.currentTime,.08)};
-function pad(f,t,d,v){const g=AC.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+d*.4);g.gain.linearRampToValueAtTime(0,t+d);g.connect(MU.inp);[['sine',-5],['triangle',6]].forEach(([ty,c])=>{const o=AC.createOscillator();o.type=ty;o.frequency.value=f;o.detune.value=c;o.connect(g);o.start(t);o.stop(t+d+.1)})}
-function bell(f,t){const g=AC.createGain(),o=AC.createOscillator();o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.07,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+4);o.connect(g);g.connect(MU.inp);o.start(t);o.stop(t+4.1)}
-function muStep(id){
- const P=MP[id];if(!P||!MU.on||MU.cur!==id||!MU.bus)return;
- const t=AC.currentTime+.05,r=P.r[MU.i++%P.r.length],k=s=>r*2**(s/12);MU.inp.frequency.value=P.f;
- [0,7,12,P.s[2+(Math.random()*(P.s.length-2)|0)]+12].forEach((s,i)=>pad(k(s),t+i*.4,13,.05));
- for(let i=0;i<4;i++)bell(k(P.s[Math.random()*P.s.length|0]+12*P.b),t+1+Math.random()*7);
- MU.t=setTimeout(()=>muStep(id),8000);
-}
-async function playFile(tr,gen){
- try{const b=await AC.decodeAudioData(await tr.blob.arrayBuffer());if(gen!==MU.g)return;const s=AC.createBufferSource();s.buffer=b;s.loop=true;s.connect(MU.bus);s.start();MU.src=s}
- catch{if(gen!==MU.g)return;const a=new Audio(URL.createObjectURL(tr.blob));a.loop=true;a.setAttribute('playsinline','');AC.createMediaElementSource(a).connect(MU.bus);MU.el=a;a.play().catch(()=>{})}
-}
-function muStopSrc(){clearTimeout(MU.t);MU.g++;try{MU.src&&MU.src.stop()}catch{}MU.src=null;if(MU.el){MU.el.pause();MU.el=null}}
-async function muPlay(){
- try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();await Promise.race([AC.resume(),sleep(500)]);
-  if(AC.state!=='running'){muRefresh();return}
-  muStopSrc();MU.on=true;S.mus=true;lsSet('psp-s',S);muGraph();muVol();
-  let id=S.mut;if(!MP[id]&&!tracks.some(x=>x.id===id))id=S.mut='p0';
-  MU.cur=id;MU.i=0;const gen=++MU.g;
-  if(MP[id])muStep(id);else await playFile(tracks.find(x=>x.id===id),gen);
- }catch(e){logE('música: '+(e.message||e))}
- muRefresh();
-}
-function muStop(){
- MU.on=false;S.mus=false;lsSet('psp-s',S);muStopSrc();
- const b=MU.bus;MU.bus=null;if(b){try{b.gain.setTargetAtTime(0,AC.currentTime,.12)}catch{}setTimeout(()=>{try{b.disconnect()}catch{}},1500)}
- muRefresh();
-}
-function muSel(id){S.mut=id;lsSet('psp-s',S);if(MU.on)muPlay();else muRefresh()}
-function muNext(d){const L=trList(),i=Math.max(0,L.findIndex(x=>x.id===S.mut));muSel(L[(i+d+L.length)%L.length].id)}
-async function addTrack(e){
- const f=e.target.files[0];e.target.value='';if(!f)return;
- try{if(f.size>80e6)throw new Error('El audio pesa más de 80 MB.');
-  const id='mu'+uid(),name=f.name.replace(/\.[^.]+$/,'').slice(0,40)||'Mi música';
-  await put('images',{id,blob:f,mus:true,name});tracks.push({id,name,blob:f});toast('Música añadida ✓');muSel(id);muPlay();
- }catch(x){toast(x.message||'No se pudo guardar la música.',1)}
-}
-async function muDel(id){
- if(!confirm('¿Quitar esta música?'))return;
- await del('images',id);tracks=tracks.filter(x=>x.id!==id);if(S.mut===id){S.mut='p0';lsSet('psp-s',S);if(MU.on)muPlay()}muRefresh();
-}
-function musicUI(){
- const L=trList(),cur=L.find(x=>x.id===S.mut)||L[0],custom=tracks.some(x=>x.id===cur.id);
- return h('div',{class:'mw'},
-  h('div',{class:'row'},h('b',{},'🎵 Música de fondo'),h('span',{class:'mut'},MU.on?'Sonando':'Pausada')),
-  h('div',{class:'mc'},h('button',{class:'xs',onclick:()=>muNext(-1)},'⏮'),h('button',{class:'pri mp',onclick:()=>MU.on?muStop():muPlay()},MU.on?'⏸ Pausar':'▶ Reproducir'),h('button',{class:'xs',onclick:()=>muNext(1)},'⏭')),
-  h('select',{onchange:e=>muSel(e.target.value)},...L.map(x=>opt(x.id,(MP[x.id]?'✦ ':'♪ ')+x.name,x.id===cur.id))),
-  h('div',{class:'row'},h('span',{},'🔈 Volumen'),h('input',{type:'range',min:'0',max:'100',value:String(S.muv),oninput:e=>{S.muv=+e.target.value;lsSet('psp-s',S);muVol()}})),
-  h('div',{class:'row'},h('label',{class:'btn'},'＋ Subir mi música',h('input',{type:'file',accept:'audio/*,.mp3,.m4a,.aac,.wav,.ogg,.flac',hidden:'',onchange:addTrack})),custom?h('button',{class:'dng',onclick:()=>muDel(cur.id)},'Quitar'):null),
-  h('p',{class:'mut'},'La música integrada se genera en vivo: no tiene fin ni se repite. Tus archivos suenan en bucle continuo.'));
-}
-function musTab(){const w=$('#musw');if(w)w.replaceChildren(musicUI())}
-function muRefresh(){musTab();if($('#dr').classList.contains('on'))drawer()}
-const muOff=()=>['click','touchend'].forEach(e=>document.removeEventListener(e,muKick,true));
-async function muKick(){if(!S.mus)return muOff();if(!MU.on)await muPlay();else if(AC&&AC.state!=='running')await AC.resume().catch(()=>{});if(MU.on&&AC&&AC.state==='running')muOff()}
-['click','touchend'].forEach(e=>document.addEventListener(e,muKick,true));
-document.addEventListener('visibilitychange',()=>{if(document.hidden||!MU.on||!AC)return;AC.resume().catch(()=>{});if(MU.el&&MU.el.paused)MU.el.play().catch(()=>{});if(AC.state!=='running')['click','touchend'].forEach(e=>document.addEventListener(e,muKick,true))});
-
-/* ---------- Modo privado ---------- */
-const PW='psp-pw';let bad=0,lockUntil=0,hidT=0;
-const sha=async s=>{try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('gs1:'+s));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch{let x=5381;for(const c of 'gs1:'+s)x=(x*33^c.charCodeAt(0))>>>0;return'f'+x}};
-function askPin(t,d){return new Promise(res=>{
- const i=$('#pini');$('#pint').textContent=t;$('#pind').textContent=d||'';i.value='';$('#pine').hidden=true;show('#pin');setTimeout(()=>i.focus(),80);
- const done=v=>{show('#pin',false);i.oninput=$('#pino').onclick=$('#pinc').onclick=null;i.blur();res(v)};
- $('#pinc').onclick=()=>done(null);
- $('#pino').onclick=()=>/^\d{6}$/.test(i.value)?done(i.value):($('#pine').textContent='Deben ser 6 dígitos.',$('#pine').hidden=false);
- i.oninput=()=>{i.value=i.value.replace(/\D/g,'').slice(0,6);if(i.value.length===6)done(i.value)}})}
-function modeSwitch(){
- $('#plv').pause();$$('.sheet.on').forEach(x=>x.classList.remove('on'));
- document.body.classList.toggle('priv',PRIV);$('#bExit').hidden=!PRIV;$('#pwc').hidden=!PRIV;
- SK=PRIV?SKP:SKN;sec=PRIV?'rec':'all';filter='';$('#q').value='';
- $$('[data-m]').forEach(el=>el.value=M[el.dataset.m]||'');head();view();render();secUI();
-}
-function openPriv(){PUBM=M;PRIV=true;M=ls('psp-mp',{title:'Privado',sub:'Modo privado',view:'grid'});modeSwitch();toast('Modo privado 🔒')}
-function exitPriv(){if(!PRIV)return;PRIV=false;M=PUBM;PUBM=null;modeSwitch();toast('Saliste del modo privado')}
-async function goPriv(){
- const st=localStorage.getItem(PW);
- if(!st){const a=await askPin('Crear contraseña','Elige 6 dígitos. No hay forma de recuperarla si la olvidas.');if(!a)return;const b=await askPin('Repite la contraseña','');if(!b)return;if(b!==a)return toast('No coinciden. Intenta de nuevo.',1);localStorage.setItem(PW,await sha(a));return openPriv()}
- if(Date.now()<lockUntil)return toast('Espera '+Math.ceil((lockUntil-Date.now())/1000)+' s para volver a intentar.',1);
- const p=await askPin('Modo privado','Escribe tu contraseña de 6 dígitos.');if(!p)return;
- if(await sha(p)!==st){if(++bad>=5){bad=0;lockUntil=Date.now()+30000}return toast('Contraseña incorrecta.',1)}
- bad=0;openPriv();
-}
-$('#bExit').onclick=exitPriv;
-$('#pwc').onclick=async()=>{const o=await askPin('Contraseña actual','');if(!o)return;if(await sha(o)!==localStorage.getItem(PW))return toast('Contraseña incorrecta.',1);
- const a=await askPin('Nueva contraseña','6 dígitos. No se puede recuperar.');if(!a)return;const b=await askPin('Repite la nueva','');if(b!==a)return toast('No coinciden.',1);localStorage.setItem(PW,await sha(a));toast('Contraseña cambiada ✓')};
-document.addEventListener('visibilitychange',()=>{if(document.hidden)hidT=Date.now();else if(PRIV&&Date.now()-hidT>45000){exitPriv();toast('Modo privado bloqueado 🔒')}});
-
 (async()=>{
- try{await openDB();await loadAll()}
+ try{await openDB();games=await all('games');(await all('images')).forEach(i=>{if(i.blob){isVid.add(i.id);blobs[i.id]=i.blob;imgs[i.id]=URL.createObjectURL(i.blob)}else imgs[i.id]=i.data})}
  catch(e){toast('Este navegador no permite guardar datos (¿modo privado?). Los cambios no se conservarán.',1)}
  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch{}
- if(!S.pdv){S.pdv=1;S.pdelay=5;lsSet('psp-s',S)}
- bind();orient();apply();head();view();render();buildFx();[0,250,800,2000].forEach(ms=>setTimeout(orient,ms));
+ bind();orient();apply();head();view();render();[0,250,800,2000].forEach(ms=>setTimeout(orient,ms));
  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
