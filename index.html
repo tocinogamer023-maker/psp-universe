@@ -13,16 +13,17 @@
 <body>
 <div id="app" class="r0">
 <div id="bg"></div><div id="ov"></div><canvas id="fxb"></canvas>
-<header><div class="tt"><h1 id="ttl"></h1><p id="sub"></p></div><div id="bigt"></div>
-<div class="hb"><button id="bAdd" aria-label="Añadir juego">＋</button><button id="bView" aria-label="Cambiar vista">▦</button><button id="bSet" aria-label="Ajustes">⚙︎</button><button id="bAct" class="sq" aria-label="Acciones rápidas">⚡</button></div></header>
+<header><button id="bMenu" aria-label="Menú rápido">☰</button><div class="tt"><h1 id="ttl"></h1><p id="sub"></p></div><div id="bigt"></div>
+<div class="hb"><button id="bExit" class="ex" hidden aria-label="Salir del modo privado">🔓 Salir</button><button id="bAdd" aria-label="Añadir juego">＋</button><button id="bView" aria-label="Cambiar vista">▦</button><button id="bSet" aria-label="Ajustes">⚙︎</button><button id="bAct" class="sq" aria-label="Acciones rápidas">⚡</button></div></header>
 <div class="bar"><input id="q" type="search" placeholder="Buscar juegos…" autocomplete="off"><div id="secs"></div><div id="chips"></div></div>
 <main id="main"><div id="lib"></div></main>
 <canvas id="fxf"></canvas>
+<button id="bInt" hidden>🎯 Tocar fondo</button><div id="sab" style="position:absolute;visibility:hidden;left:0;bottom:0;padding-bottom:env(safe-area-inset-bottom)"></div>
 <div id="toast" role="status"></div>
 
 <div id="gf" class="sheet"><div class="panel"><form id="fm"><h2 id="ft">Añadir juego</h2>
 <input type="hidden" name="gid">
-<label>Tipo<select name="type"><option value="psp">Juego PSP (PPSSPP)</option><option value="game">Juego de iOS (Atajo o enlace)</option><option value="web">Página web</option><option value="video">Video</option></select></label>
+<label>Tipo<select name="type"><option value="psp">Juego PSP (PPSSPP)</option><option value="game">Juego de iOS (Atajo o enlace)</option><option value="online">Juego online</option><option value="web">Página web</option><option value="video">Video</option><option value="nes">Nintendo NES</option><option value="snes">Super Nintendo</option><option value="n64">Nintendo 64</option><option value="gbc">Game Boy Color</option><option value="gba">Game Boy Advance</option><option value="nds">Nintendo DS</option></select></label>
 <label>Nombre<input name="name" required maxlength="120"></label>
 <label>Categoría<input name="cat" list="cl" maxlength="40" placeholder="Acción, RPG, Deportes…"><datalist id="cl"></datalist></label>
 <label>Nota (opcional)<textarea name="note" rows="2" maxlength="300"></textarea></label>
@@ -46,7 +47,7 @@
 <div id="ds" class="sheet"><div class="panel pf">
 <div class="two top"><h2>Ajustes</h2><button id="dc" class="xs" aria-label="Cerrar">✕</button></div>
 <p id="st" class="st"></p>
-<nav id="tabs"><button data-t="gen" class="on">General</button><button data-t="fon">Fondo</button><button data-t="por">Portadas</button><button data-t="tar">Tarjetas</button><button data-t="sec">Secciones</button><button data-t="ani">Animación</button><button data-t="acc">Acciones</button><button data-t="dia">Diagnóstico</button><button data-t="est">Estilo</button><button data-t="tem">Temas</button><button data-t="dat">Datos</button><button data-t="ayu">Ayuda</button></nav>
+<nav id="tabs"><button data-t="gen" class="on">General</button><button data-t="mus">Música</button><button data-t="fon">Fondo</button><button data-t="por">Portadas</button><button data-t="tar">Tarjetas</button><button data-t="sec">Secciones</button><button data-t="ani">Animación</button><button data-t="acc">Acciones</button><button data-t="dia">Diagnóstico</button><button data-t="est">Estilo</button><button data-t="tem">Temas</button><button data-t="dat">Datos</button><button data-t="ayu">Ayuda</button></nav>
 <div class="pbody">
 <section data-s="gen">
 <label>Nombre de la biblioteca<input data-m="title" maxlength="60"></label>
@@ -55,8 +56,9 @@
 <div id="seg" class="seg"><button data-o="auto">Automático</button><button data-o="v">Vertical</button><button data-o="h">Horizontal</button><button data-o="hi">Horizontal invertido</button></div>
 <p class="mut">En modo fijo la interfaz se queda así sin importar cómo sujetes el iPhone. Para que sea totalmente estático, activa también el bloqueo de orientación vertical del iPhone (Centro de control). iOS no deja que una web lo bloquee por sí sola.</p>
 </section>
+<section data-s="mus" hidden><div id="musw"></div></section>
 <section data-s="fon" hidden>
-<p class="mut">Elige una imagen o un video. Cada modo puede tener el suyo; si no, usa el global.</p>
+<p class="mut">Elige cualquier archivo: imagen, GIF animado, video, página HTML interactiva, PDF… (máx. 80 MB). Cada modo puede tener el suyo; si no, usa el global.</p>
 <div id="bgrows"></div>
 <label class="row">Oscurecer fondo<input type="range" data-k="overlay" min="0" max="90"></label>
 <label class="row">Fondo animado (degradado, si no hay fondo)<input type="checkbox" data-k="animBg"></label>
@@ -149,7 +151,7 @@
 <p class="mut">Un tema guarda colores, estilo, orientación y fondos. Restaurar no borra tus juegos.</p>
 </section>
 <section data-s="dat" hidden>
-<button id="ex" class="pri">Exportar copia (.json)</button>
+<button id="ex" class="pri">Exportar copia (.json)</button><button id="pwc" class="sec" hidden>🔒 Cambiar contraseña privada</button>
 <label class="sec btn">Importar copia<input type="file" id="imf" accept=".json,application/json" hidden></label>
 <p class="mut">La copia incluye juegos, temas, ajustes y las imágenes guardadas (portadas y fondos de imagen). Los fondos de video y las portadas con URL no se guardan dentro: de las URL solo queda la dirección. Si borras los datos de Safari o del sitio, se pierde lo local: exporta con frecuencia. Importar reemplaza la biblioteca actual y siempre pide confirmación.</p>
 </section>
@@ -157,6 +159,8 @@
 <p class="mut">Esta app no puede leer la carpeta de PPSSPP ni tus ROM. En PPSSPP usa «Copiar enlace profundo» en el juego y pégalo al editarlo. «Abrir» solo lanza el enlace; si PPSSPP se reinstala o iOS cambia la ruta, habrá que copiarlo de nuevo. Eliminar un juego aquí nunca toca la ROM ni las partidas.</p>
 </section>
 </div></div></div>
+<div id="dr" class="sheet dr"><div class="drp"><div class="two top"><h2>Ajustes rápidos</h2><button id="drc" class="xs" aria-label="Cerrar">✕</button></div><div id="drb"></div></div></div>
+<div id="pin" class="sheet"><div class="panel sm"><h3 id="pint"></h3><p id="pind" class="mut"></p><input id="pini" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="••••••"><p id="pine" class="err" hidden></p><button id="pino" class="pri">Aceptar</button><button id="pinc" class="sec">Cancelar</button></div></div>
 </div>
 <script src="app.js"></script>
 </body></html>
