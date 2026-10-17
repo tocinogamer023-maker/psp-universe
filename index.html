@@ -13,11 +13,12 @@
 <title>Game Space</title></head>
 <body>
 <div id="app" class="r0">
-<div id="bg"></div><div id="ov"></div>
+<div id="bg"></div><div id="ov"></div><canvas id="fxb"></canvas>
 <header><button id="bMenu" class="mb" aria-label="Menú rápido">☰</button><div class="tt"><h1 id="ttl"></h1><p id="sub"></p></div><div id="bigt"></div>
 <div class="hb"><button id="bAdd" aria-label="Añadir juego">＋</button><button id="bView" aria-label="Cambiar vista">▦</button><button id="bSet" aria-label="Ajustes">⚙︎</button><button id="bAct" class="sq" aria-label="Acciones rápidas">⚡</button></div></header>
 <div class="bar"><div id="secs"></div><input id="q" type="search" placeholder="Buscar juegos…" autocomplete="off"><div id="chips"></div></div>
 <main id="main"><div id="lib"></div></main>
+<canvas id="fxf"></canvas>
 <div id="toast" role="status"></div>
 
 <div id="gf" class="sheet"><div class="panel"><form id="fm"><h2 id="ft">Añadir juego</h2>
@@ -67,6 +68,11 @@
 <label class="row">Tocar la pantalla mueve el fondo y crea una onda<input type="checkbox" data-k="bgtt"></label>
 <label class="row">Intensidad<input type="range" data-k="bgti" min="0" max="100"></label>
 <p class="mut">La primera vez, iOS pide permiso para leer el movimiento del teléfono. Si tienes «reducir movimiento» activado en iOS, esto se desactiva. Gasta un poco más de batería.</p>
+<h3>Cristales flotantes</h3>
+<label class="row">Activar<input type="checkbox" data-k="fx"></label>
+<label class="row">Cantidad<input type="range" data-k="fxn" min="0" max="30"></label>
+<label class="row">Intensidad<input type="range" data-k="fxo" min="10" max="100"></label>
+<p class="mut">Pedazos de cristal que flotan despacio, unos detrás de las portadas y otros por encima. Por ahora son decorativos; en la siguiente actualización se podrán tocar y lanzar.</p>
 <p class="mut">Los videos van sin sonido, en bucle y se guardan solo en este iPhone (máx. 80 MB). No entran en la copia de seguridad. Con el modo de bajo consumo, iOS puede dejarlos en imagen fija. Los GIF y WebP animados se guardan tal cual (máx. 25 MB) y no entran en la copia de seguridad; si pesan mucho, mejor usa un video corto.</p>
 </section>
 <section data-s="est" hidden>
@@ -133,8 +139,8 @@
 <label class="row">Giro 3D completo y lados 3D<input type="checkbox" data-k="flip3"></label>
 <p class="mut">Si algo se ve mal, desactívalo y vuelve al giro anterior.</p>
 <h3>Al iniciar un juego</h3>
-<label class="row">Animación<select data-k="lfx"><option value="zoom">Zoom</option><option value="spin">Giro</option><option value="flip">Voltear</option><option value="hole">Agujero negro</option><option value="none">Ninguna</option></select></label>
-<label class="row">Duración del agujero negro (25 = 2,5 s)<input type="range" data-k="bhd" min="12" max="40"></label>
+<label class="row">Animación<select data-k="lfx"><option value="zoom">Zoom</option><option value="spin">Giro</option><option value="flip">Voltear</option><option value="hole">Agujero negro</option><option value="dust">Polvo de partículas</option><option value="none">Ninguna</option></select></label>
+<label class="row">Duración (agujero negro y polvo; 25 = 2,5 s)<input type="range" data-k="bhd" min="12" max="40"></label>
 </section>
 <section data-s="acc" hidden>
 <p class="mut">El botón ⚡ de la cabecera ejecuta esta cadena paso a paso. Mantenlo pulsado para abrir esta pestaña.</p>
