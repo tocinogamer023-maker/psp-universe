@@ -340,6 +340,54 @@ $('#lib').addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(()=>{
 addEventListener('resize',()=>setTimeout(applyCar,60));
 $('#pvf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;pS={file:f,clear:false};pvsync(editing)};
 $('#pvc').onclick=()=>{pS={file:null,clear:true};pvsync(editing)};
+/* ---------- Música de fondo ---------- */
+let AM=null,AUD=null;
+const MUS=()=>(M.mu=M.mu||{on:false,vol:40,cur:'gen',tracks:[]});
+function genStart(vol){
+ try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch{return}
+ const now=AC.currentTime,master=AC.createGain();master.gain.setValueAtTime(0,now);master.connect(AC.destination);
+ const dly=AC.createDelay(2);dly.delayTime.value=.55;const fb=AC.createGain();fb.gain.value=.5;dly.connect(fb);fb.connect(dly);
+ const wet=AC.createGain();wet.gain.value=.5;dly.connect(wet);wet.connect(master);
+ const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1300;lp.Q.value=.3;lp.connect(master);lp.connect(dly);
+ const CH=[[57,60,64,67],[53,57,60,64],[48,52,55,59],[55,59,62,66]],mf=n=>440*Math.pow(2,(n-69)/12);
+ let ci=0;
+ const chord=()=>{const t=AC.currentTime,c=CH[ci++%CH.length];
+  c.forEach((n,i)=>{[0,1].forEach(k=>{const o=AC.createOscillator(),g=AC.createGain();o.type=k?'triangle':'sine';o.frequency.value=mf(n+(i===0?-12:0));o.detune.value=(Math.random()-.5)*14;
+   g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(k?.025:.06,t+3.5);g.gain.linearRampToValueAtTime(0,t+10);o.connect(g);g.connect(lp);o.start(t);o.stop(t+10.5)})})};
+ const bell=()=>{if(Math.random()<.45)return;const t=AC.currentTime,sc=[69,72,74,76,79,81],n=sc[Math.floor(Math.random()*sc.length)],o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=mf(n);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.05,t+.02);g.gain.exponentialRampToValueAtTime(.0005,t+3.5);o.connect(g);g.connect(lp);o.start(t);o.stop(t+3.6)};
+ chord();const i1=setInterval(chord,7500),i2=setInterval(bell,2300);
+ master.gain.linearRampToValueAtTime(vol*.9,now+3);
+ AM={master,stop(){clearInterval(i1);clearInterval(i2);try{master.gain.cancelScheduledValues(AC.currentTime);master.gain.setTargetAtTime(0,AC.currentTime,.25)}catch{}setTimeout(()=>{try{master.disconnect();lp.disconnect();dly.disconnect()}catch{}},1500)}};
+}
+function musicStop(){if(AM){AM.stop();AM=null}if(AUD){AUD.pause();try{URL.revokeObjectURL(AUD._u)}catch{}AUD.removeAttribute('src');AUD=null}}
+function musicPlay(){
+ const m=MUS();musicStop();m.on=true;lsSet('psp-m',M);
+ if(m.cur==='gen'||!blobs[m.cur])genStart(m.vol/100);
+ else{const u=URL.createObjectURL(blobs[m.cur]),a=new Audio(u);a._u=u;a.loop=true;a.volume=m.vol/100;a.play().catch(()=>toast('Toca ▶ para iniciar la música.',1));AUD=a}
+ mpUI();
+}
+function musicVol(v){const m=MUS();m.vol=v;lsSet('psp-m',M);if(AM&&AC)AM.master.gain.setTargetAtTime(v/100*.9,AC.currentTime,.1);if(AUD)AUD.volume=v/100}
+function useTrack(id){const m=MUS();m.cur=id;lsSet('psp-m',M);if(m.on)musicPlay();else mpUI()}
+function musicNext(){const m=MUS(),ids=['gen',...m.tracks.filter(t=>blobs[t.id]).map(t=>t.id)];useTrack(ids[(Math.max(0,ids.indexOf(m.cur))+1)%ids.length])}
+async function addTrack(e){const f=e.target.files[0];e.target.value='';if(!f)return;
+ if(f.size>60e6)return toast('El audio pesa más de 60 MB.',1);
+ try{const id='mu'+uid(),m=MUS();await put('images',{id,blob:f,aud:true});blobs[id]=f;m.tracks.push({id,name:f.name.replace(/\.[^.]+$/,'').slice(0,40)});m.cur=id;lsSet('psp-m',M);musicPlay();toast('Música añadida ✓')}catch(x){toast('No se pudo guardar el audio.',1)}}
+async function delTrack(id){const m=MUS();try{await del('images',id)}catch{}delete blobs[id];m.tracks=m.tracks.filter(t=>t.id!==id);if(m.cur===id){m.cur='gen';if(m.on)musicPlay()}lsSet('psp-m',M);mpUI()}
+function mpUI(){
+ const m=MUS(),box=$('#mp'),tr=m.tracks.filter(t=>blobs[t.id]),nm=m.cur==='gen'?'Ambiente infinito (predeterminada)':((tr.find(t=>t.id===m.cur)||{}).name||'Ambiente infinito');
+ const vol=h('input',{type:'range',min:'0',max:'100',value:String(m.vol),oninput:e=>musicVol(+e.target.value)});
+ box.replaceChildren(
+  h('div',{class:'mut'},'Sonando: '+nm),
+  h('div',{class:'row'},h('button',{class:'pri',onclick:()=>{if(m.on){m.on=false;lsSet('psp-m',M);musicStop();mpUI()}else musicPlay()}},m.on?'⏸ Pausar':'▶ Reproducir'),h('button',{onclick:musicNext},'⏭ Cambiar')),
+  h('label',{class:'row'},h('span',{},'Volumen'),vol),
+  h('label',{class:'sec btn'},'＋ Subir mi música',h('input',{type:'file',accept:'audio/*',hidden:'',onchange:addTrack})),
+  h('div',{class:'row'},h('span',{},'Ambiente infinito'),h('button',{onclick:()=>useTrack('gen')},m.cur==='gen'?'✓':'Usar')),
+  ...tr.map(t=>h('div',{class:'row'},h('span',{},t.name),h('button',{onclick:()=>useTrack(t.id)},m.cur===t.id?'✓':'Usar'),h('button',{class:'dng',onclick:()=>delTrack(t.id)},'✕'))),
+  h('p',{class:'mut'},'La música se pausa si sales de la app y vuelve con un toque. Tus canciones se guardan solo en este iPhone y no entran en la copia de seguridad.'));
+}
+document.addEventListener('pointerdown',()=>{const m=MUS();if(m.on&&!AM&&!AUD)musicPlay()},{once:true,capture:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(AC&&AC.state==='suspended'&&AM)AC.resume();if(AUD&&AUD.paused&&MUS().on)AUD.play().catch(()=>{})});
+
 /* ---------- Menú rápido ☰ ---------- */
 const recent=k=>{M.rk=[k,...(M.rk||[]).filter(x=>x!==k)].slice(0,12);lsSet('psp-m',M)};
 function qpUI(){
@@ -354,7 +402,7 @@ function qpUI(){
  $('#qr').replaceChildren(...(rows.length?rows:[h('p',{class:'mut'},'Aún no has cambiado ajustes. Los que cambies aparecerán aquí; fija con 📍 los que quieras tener siempre a mano.')]));
  sync();
 }
-$('#bMenu').onclick=()=>{sync();qpUI();show('#qp')};
+$('#bMenu').onclick=()=>{sync();mpUI();qpUI();show('#qp')};
 $('#qc').onclick=()=>show('#qp',false);
 $('#qp').addEventListener('click',e=>{if(e.target===e.currentTarget)show('#qp',false)});
 const showLog=()=>{$('#logv').textContent=LOG.join('\n')||'Sin errores registrados.'};
@@ -427,7 +475,7 @@ bA.addEventListener('pointerdown',()=>{lp=0;pressT=setTimeout(()=>{lp=1;$('#bSet
 bA.onclick=()=>{if(lp){lp=0;return}runActs()};
 
 /* ---------- Al volver a la app: recalcular tamaño y recargar fondos ---------- */
-function resume(){Object.keys(blobs).forEach(id=>{try{URL.revokeObjectURL(imgs[id])}catch{}imgs[id]=URL.createObjectURL(blobs[id])});lastBg=null;orient();apply()}
+function resume(){Object.keys(blobs).forEach(id=>{if(id.slice(0,2)==='mu')return;try{URL.revokeObjectURL(imgs[id])}catch{}imgs[id]=URL.createObjectURL(blobs[id])});lastBg=null;orient();apply()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(resume,120)});
 addEventListener('pageshow',()=>setTimeout(resume,120));
 
@@ -447,7 +495,7 @@ document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closes
 
 document.addEventListener('pointerdown',()=>{const v=$('#bg video');if(v&&v.paused&&!RM.matches)v.play().catch(()=>{})});
 (async()=>{
- try{await openDB();games=await all('games');(await all('images')).forEach(i=>{if(i.blob){isVid.add(i.id);blobs[i.id]=i.blob;imgs[i.id]=URL.createObjectURL(i.blob)}else imgs[i.id]=i.data})}
+ try{await openDB();games=await all('games');(await all('images')).forEach(i=>{if(i.blob){blobs[i.id]=i.blob;if(!i.aud){isVid.add(i.id);imgs[i.id]=URL.createObjectURL(i.blob)}}else imgs[i.id]=i.data})}
  catch(e){toast('Este navegador no permite guardar datos (¿modo privado?). Los cambios no se conservarán.',1)}
  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch{}
  if(!S.pdv)S.pdelay=5;if((S.pdv||0)<2){S.pdv=2;S.psound=true;lsSet('psp-s',S)}
