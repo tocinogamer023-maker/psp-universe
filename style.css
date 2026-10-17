@@ -223,3 +223,8 @@ body.shownote .note{display:none}
 .panel.dr{width:min(88%,350px);height:100%;max-height:100%;border-radius:0 26px 26px 0}
 .sb{position:absolute;right:8px;top:8px;z-index:3;width:30px;height:30px;min-height:30px;padding:0;border-radius:50%;font-size:14px;background:rgba(0,0,0,.42);border:1px solid var(--line);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .card:not(.flip) .cv video{opacity:0}
+
+/* ===== Actualización 5: reacción del fondo ===== */
+.rp{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;border:2px solid var(--p);box-shadow:0 0 10px var(--p);pointer-events:none;z-index:14;opacity:.9;animation:rp .7s ease-out forwards}
+@keyframes rp{to{transform:scale(14);opacity:0}}
+#bg{will-change:transform}

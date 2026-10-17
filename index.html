@@ -62,7 +62,12 @@
 <div id="bgrows"></div>
 <label class="row">Oscurecer fondo<input type="range" data-k="overlay" min="0" max="90"></label>
 <label class="row">Fondo animado (degradado, si no hay fondo)<input type="checkbox" data-k="animBg"></label>
-<p class="mut">Los videos van sin sonido, en bucle y se guardan solo en este iPhone (máx. 80 MB). No entran en la copia de seguridad. Con el modo de bajo consumo, iOS puede dejarlos en imagen fija.</p>
+<h3>Reacción del fondo</h3>
+<label class="row">Inclinar el teléfono mueve el fondo<input type="checkbox" data-k="bgt"></label>
+<label class="row">Tocar la pantalla mueve el fondo y crea una onda<input type="checkbox" data-k="bgtt"></label>
+<label class="row">Intensidad<input type="range" data-k="bgti" min="0" max="100"></label>
+<p class="mut">La primera vez, iOS pide permiso para leer el movimiento del teléfono. Si tienes «reducir movimiento» activado en iOS, esto se desactiva. Gasta un poco más de batería.</p>
+<p class="mut">Los videos van sin sonido, en bucle y se guardan solo en este iPhone (máx. 80 MB). No entran en la copia de seguridad. Con el modo de bajo consumo, iOS puede dejarlos en imagen fija. Los GIF y WebP animados se guardan tal cual (máx. 25 MB) y no entran en la copia de seguridad; si pesan mucho, mejor usa un video corto.</p>
 </section>
 <section data-s="est" hidden>
 <h3>Estilos rápidos</h3><div id="presets"></div>

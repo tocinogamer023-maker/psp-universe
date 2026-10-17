@@ -6,7 +6,7 @@ addEventListener('unhandledrejection',e=>{if(e.reason&&e.reason.stack&&!/app\.js
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const h=(t,a={},...c)=>{const e=document.createElement(t);for(const k in a){if(k.startsWith('on'))e[k]=a[k];else e.setAttribute(k,a[k])}e.append(...c.flat().filter(x=>x!=null&&x!==false));return e};
 const BGK=['bgImg','bgV','bgH','bgHI'];
-const DEF={mode:'dark',primary:'#7c5cff',secondary:'#19c6e6',bg:'#0b0d14',bgImg:'',bgV:'',bgH:'',bgHI:'',orient:'auto',overlay:35,blur:12,glass:55,cover:150,radius:18,shadow:30,gap:14,font:'system',anim:true,animBg:false,fit:'contain',ratio:'3/4',cbord:0,cbc:'#ffffff',bright:100,showCat:true,showNote:false,btn:'pill',tsize:14,pad:10,hsize:24,calign:'left',canim:'cascade',aspd:100,sfx:true,vol:40,pack:'soft',line:35,czoom:112,cang:38,cdim:45,bigt:true,tf:'system',tfs:26,tfc:'#ffffff',legib:60,perf:'full',ccover:190,edgeT:7,edgeC:'#ffffff',compact:true,pblur:10,pa:25,pdelay:0,psound:false,pdv:0,lfx:'zoom'};
+const DEF={mode:'dark',primary:'#7c5cff',secondary:'#19c6e6',bg:'#0b0d14',bgImg:'',bgV:'',bgH:'',bgHI:'',orient:'auto',overlay:35,blur:12,glass:55,cover:150,radius:18,shadow:30,gap:14,font:'system',anim:true,animBg:false,fit:'contain',ratio:'3/4',cbord:0,cbc:'#ffffff',bright:100,showCat:true,showNote:false,btn:'pill',tsize:14,pad:10,hsize:24,calign:'left',canim:'cascade',aspd:100,sfx:true,vol:40,pack:'soft',line:35,czoom:112,cang:38,cdim:45,bigt:true,tf:'system',tfs:26,tfc:'#ffffff',legib:60,perf:'full',ccover:190,edgeT:7,edgeC:'#ffffff',compact:true,pblur:10,pa:25,pdelay:0,psound:false,pdv:0,lfx:'zoom',bgt:false,bgti:40,bgtt:false};
 const FONTS={system:'-apple-system,system-ui,sans-serif',rounded:'ui-rounded,"SF Pro Rounded",system-ui,sans-serif',serif:'ui-serif,Georgia,serif',mono:'ui-monospace,Menlo,monospace',didot:'"Didot","Bodoni 72",serif',avenir:'"Avenir Next",system-ui,sans-serif',futura:'"Futura","Avenir Next",sans-serif',optima:'"Optima",sans-serif',copper:'"Copperplate",serif',marker:'"Marker Felt",cursive'};
 const PRE={dark:'#0b0d14',light:'#f1f3f9'},VIEWS=['list','grid','car'],ICON={list:'☰',grid:'▦',car:'◫'},ORI=['auto','v','h','hi'];
 const PRESETS={
@@ -41,7 +41,7 @@ function orient(){
  const a=$('#app'),sw=r===90||r===-90;
  a.style.width=(sw?H:W)+'px';a.style.height=(sw?W:H)+'px';
  a.style.transform=r===90?`translate(${W}px,0) rotate(90deg)`:r===-90?`translate(0,${H}px) rotate(-90deg)`:r===180?`translate(${W}px,${H}px) rotate(180deg)`:'none';
- a.classList.remove('r0','rx');a.classList.add(r?'rx':'r0');
+ a.classList.remove('r0','rx');a.classList.add(r?'rx':'r0');curR=r;curW=W;curH=H;
  const k=o==='v'?'V':o==='h'?'H':o==='hi'?'HI':land?'H':'V';
  if(k!==curKey){curKey=k;apply()}
  $$('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.o===o));
@@ -78,7 +78,7 @@ function apply(){
 const saveS=()=>{lsSet('psp-s',S);apply();orient()};
 const sync=()=>$$('[data-k]').forEach(el=>{el[el.type==='checkbox'?'checked':'value']=S[el.dataset.k];if(el._v)el._v.textContent=el.value});
 function bind(){
- const hook=el=>{const k=el.dataset.k,c=el.type==='checkbox';el.oninput=()=>{recent(k);S[k]=c?el.checked:el.type==='range'?+el.value:el.value;if(k==='bg')S.mode='custom';if(k==='mode'&&PRE[S.mode])S.bg=PRE[S.mode];saveS();sync();if(k==='showCat'||k==='showNote')render();if(['czoom','cang','cdim','cover','gap'].includes(k))applyCar()};el.onchange=()=>toast('Guardado ✓')};window.hook=hook;$$('[data-k]').forEach(hook);
+ const hook=el=>{const k=el.dataset.k,c=el.type==='checkbox';el.oninput=()=>{recent(k);S[k]=c?el.checked:el.type==='range'?+el.value:el.value;if(k==='bg')S.mode='custom';if(k==='mode'&&PRE[S.mode])S.bg=PRE[S.mode];saveS();sync();if(k==='showCat'||k==='showNote')render();if(['czoom','cang','cdim','cover','gap'].includes(k))applyCar();if(k.slice(0,3)==='bgt')motionStart(k==='bgt'&&S.bgt)};el.onchange=()=>toast('Guardado ✓')};window.hook=hook;$$('[data-k]').forEach(hook);
  $$('[data-m]').forEach(el=>{el.value=M[el.dataset.m];el.oninput=()=>{M[el.dataset.m]=el.value;lsSet('psp-m',M);head()}});
  $$('#seg button').forEach(b=>b.onclick=()=>{S.orient=b.dataset.o;saveS();toast('Orientación guardada ✓')});
  $$('#tabs button').forEach(b=>b.onclick=()=>{$$('#tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('[data-s]').forEach(s=>s.hidden=s.dataset.s!==b.dataset.t)});
@@ -91,7 +91,7 @@ function view(){const v0=sc(sec).view||M.view,v=VIEWS.includes(v0)?v0:'grid';$('
 async function gcBg(id){
  if(!id||BGK.some(k=>S[k]===id))return;
  if((await all('themes')).some(t=>BGK.some(k=>t[k]===id)))return;
- await del('images',id);if(isVid.has(id))URL.revokeObjectURL(imgs[id]);delete imgs[id];isVid.delete(id);
+ await del('images',id);if(blobs[id]){URL.revokeObjectURL(imgs[id]);delete blobs[id]}delete imgs[id];isVid.delete(id);
 }
 const gcAll=ids=>Promise.all(ids.map(gcBg));
 function bgRows(){
@@ -106,6 +106,7 @@ async function setBg(k,e){
  try{
   const id='bg'+uid();let vid=f.type.startsWith('video/');
   if(vid){if(f.size>80e6)throw new Error('El video pesa más de 80 MB. Recórtalo o comprímelo.');await put('images',{id,blob:f,vid:true});imgs[id]=URL.createObjectURL(f);blobs[id]=f;isVid.add(id)}
+  else if(/^image\/(gif|webp)$/.test(f.type)){if(f.size>25e6)throw new Error('La imagen animada pesa más de 25 MB.');await put('images',{id,blob:f,img:true});imgs[id]=URL.createObjectURL(f);blobs[id]=f}
   else{const d=await shrink(f,1600);await put('images',{id,data:d});imgs[id]=d}
   const old=S[k];S[k]=id;saveS();await gcBg(old);bgRows();toast('Fondo guardado ✓');
  }catch(x){toast(x.message||'No se pudo guardar el fondo.',1)}
@@ -340,6 +341,53 @@ $('#lib').addEventListener('scroll',()=>{if(!raf)raf=requestAnimationFrame(()=>{
 addEventListener('resize',()=>setTimeout(applyCar,60));
 $('#pvf').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;pS={file:f,clear:false};pvsync(editing)};
 $('#pvc').onclick=()=>{pS={file:null,clear:true};pvsync(editing)};
+/* ---------- Fondo que reacciona al giro y al toque ---------- */
+let curR=0,curW=0,curH=0;
+const bgm={x:0,y:0,tx:0,ty:0,raf:0,ori:false,got:false,bx:null,by:null,px:0,py:0,asked:false};
+const sheetOpen=()=>!!document.querySelector('.sheet.on');
+function loc(e){const r=curR;return r===90?{x:e.clientY,y:curW-e.clientX}:r===-90?{x:curH-e.clientY,y:e.clientX}:r===180?{x:curW-e.clientX,y:curH-e.clientY}:{x:e.clientX,y:e.clientY}}
+function onOri(e){
+ if(!S.bgt||RM.matches)return;bgm.got=true;
+ const g=e.gamma||0,b=e.beta||0,an=(((screen.orientation&&screen.orientation.angle)||window.orientation||0)%360+360)%360;
+ let sx,sy;
+ if(an===90){sx=b;sy=-g}else if(an===270){sx=-b;sy=g}else if(an===180){sx=-g;sy=-b}else{sx=g;sy=b}
+ if(bgm.bx===null){bgm.bx=sx;bgm.by=sy}
+ bgm.bx+=(sx-bgm.bx)*.01;bgm.by+=(sy-bgm.by)*.01;
+ const amp=S.bgti/100*26,cl=v=>Math.max(-1,Math.min(1,v/25)),dx=-cl(sx-bgm.bx)*amp,dy=-cl(sy-bgm.by)*amp,th=-curR*Math.PI/180;
+ bgm.tx=dx*Math.cos(th)-dy*Math.sin(th)+bgm.px;bgm.ty=dx*Math.sin(th)+dy*Math.cos(th)+bgm.py;
+}
+function motionStart(ask){
+ const want=(S.bgt||S.bgtt)&&!RM.matches;
+ if(!want){motionStop();return}
+ if(S.bgt&&!bgm.ori){
+  const go=()=>{window.addEventListener('deviceorientation',onOri);bgm.ori=true},DO=window.DeviceOrientationEvent;
+  if(DO&&typeof DO.requestPermission==='function'){
+   if(ask)DO.requestPermission().then(r=>{if(r==='granted')go();else{S.bgt=false;saveS();sync();toast('Sin permiso de movimiento: el fondo no reaccionará al giro.',1)}}).catch(()=>toast('No se pudo pedir el permiso de movimiento.',1));
+   else go();
+  }else go();
+ }
+ if(!S.bgt&&bgm.ori){window.removeEventListener('deviceorientation',onOri);bgm.ori=false}
+ $('#bg').style.transform=`translate3d(${bgm.x.toFixed(1)}px,${bgm.y.toFixed(1)}px,0) scale(1.1)`;
+ if(!bgm.raf)bgm.raf=requestAnimationFrame(mLoop);
+}
+function motionStop(){if(bgm.ori){window.removeEventListener('deviceorientation',onOri);bgm.ori=false}cancelAnimationFrame(bgm.raf);bgm.raf=0;bgm.tx=bgm.ty=bgm.px=bgm.py=0;bgm.x=bgm.y=0;$('#bg').style.transform=''}
+function mLoop(){
+ bgm.raf=requestAnimationFrame(mLoop);
+ if(document.hidden)return;
+ if(!S.bgt){bgm.tx=bgm.px;bgm.ty=bgm.py}
+ const dx=bgm.tx-bgm.x,dy=bgm.ty-bgm.y;if(Math.abs(dx)<.05&&Math.abs(dy)<.05)return;
+ bgm.x+=dx*.08;bgm.y+=dy*.08;$('#bg').style.transform=`translate3d(${bgm.x.toFixed(1)}px,${bgm.y.toFixed(1)}px,0) scale(1.1)`;
+}
+let pdn=false;
+function touchPush(q){const amp=S.bgti/100*26;bgm.px=-(q.x-curW/2)/curW*amp;bgm.py=-(q.y-curH/2)/curH*amp}
+function ripple(q){const r=h('div',{class:'rp'});r.style.left=q.x+'px';r.style.top=q.y+'px';$('#app').append(r);setTimeout(()=>r.remove(),750)}
+document.addEventListener('pointerdown',e=>{
+ if(S.bgt&&!bgm.got&&!bgm.asked){bgm.asked=true;motionStart(true)}
+ if(!S.bgtt||RM.matches||sheetOpen())return;const q=loc(e);ripple(q);pdn=true;touchPush(q)},{capture:true,passive:true});
+document.addEventListener('pointermove',e=>{if(pdn&&S.bgtt)touchPush(loc(e))},{passive:true});
+const pup=()=>{pdn=false;bgm.px=bgm.py=0};
+document.addEventListener('pointerup',pup,true);document.addEventListener('pointercancel',pup,true);
+
 /* ---------- Música de fondo ---------- */
 let AM=null,AUD=null;
 const MUS=()=>(M.mu=M.mu||{on:false,vol:40,cur:'gen',tracks:[]});
@@ -495,10 +543,10 @@ document.addEventListener('pointerdown',e=>{if(e.target.closest&&e.target.closes
 
 document.addEventListener('pointerdown',()=>{const v=$('#bg video');if(v&&v.paused&&!RM.matches)v.play().catch(()=>{})});
 (async()=>{
- try{await openDB();games=await all('games');(await all('images')).forEach(i=>{if(i.blob){blobs[i.id]=i.blob;if(!i.aud){isVid.add(i.id);imgs[i.id]=URL.createObjectURL(i.blob)}}else imgs[i.id]=i.data})}
+ try{await openDB();games=await all('games');(await all('images')).forEach(i=>{if(i.blob){blobs[i.id]=i.blob;if(!i.aud){if(!i.img)isVid.add(i.id);imgs[i.id]=URL.createObjectURL(i.blob)}}else imgs[i.id]=i.data})}
  catch(e){toast('Este navegador no permite guardar datos (¿modo privado?). Los cambios no se conservarán.',1)}
  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch{}
  if(!S.pdv)S.pdelay=5;if((S.pdv||0)<2){S.pdv=2;S.psound=true;lsSet('psp-s',S)}
- bind();orient();apply();head();view();render();[0,250,800,2000].forEach(ms=>setTimeout(orient,ms));
+ bind();orient();apply();head();view();render();motionStart(false);[0,250,800,2000].forEach(ms=>setTimeout(orient,ms));
  if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
