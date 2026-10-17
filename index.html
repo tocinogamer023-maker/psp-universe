@@ -39,7 +39,7 @@
 <div class="two"><button type="button" id="fc" class="sec">Cancelar</button><button type="submit" class="pri">Guardar</button></div>
 </form></div></div>
 
-<div id="pl" class="sheet"><div class="panel pp"><video id="plv" controls playsinline></video><button id="plc" class="sec">Cerrar</button></div></div>
+<div id="pl" class="sheet"><div class="panel pp"><video id="plv" controls playsinline></video><button id="plc" class="sec">Cerrar</button></div><button id="plk" class="lk" aria-label="Bloquear pantalla"></button></div>
 
 <div id="qp" class="sheet drawer"><div class="panel pf dr"><div class="two top"><h2>Menú rápido</h2><button id="qc" class="xs" aria-label="Cerrar">✕</button></div><div class="pbody"><h3>🎵 Música</h3><section id="mp"></section><h3>Ajustes recientes y fijados</h3><section id="qr"></section></div></div></div>
 
@@ -81,6 +81,7 @@
 <label class="row">Tamaño del título<input type="range" data-k="hsize" min="18" max="40"></label>
 <label class="row">Contorno de controles<input type="range" data-k="line" min="10" max="80"></label>
 <label class="row">Legibilidad del texto<input type="range" data-k="legib" min="0" max="100"></label>
+<label class="row">Contorno de letras<input type="range" data-k="tout" min="0" max="100"></label>
 <label class="row">Animaciones<input type="checkbox" data-k="anim"></label>
 </section>
 <section data-s="por" hidden>
@@ -130,7 +131,8 @@
 <label class="row">Doble toque abre el video con sonido<input type="checkbox" data-k="psound"></label>
 <p class="mut">Doble toque en la portada central del carrusel: gira y muestra el video con las notas debajo. Se elige el video al editar cada juego.</p>
 <h3>Al iniciar un juego</h3>
-<label class="row">Animación<select data-k="lfx"><option value="zoom">Zoom</option><option value="spin">Giro</option><option value="flip">Voltear</option><option value="none">Ninguna</option></select></label>
+<label class="row">Animación<select data-k="lfx"><option value="zoom">Zoom</option><option value="spin">Giro</option><option value="flip">Voltear</option><option value="hole">Agujero negro</option><option value="none">Ninguna</option></select></label>
+<label class="row">Duración del agujero negro (25 = 2,5 s)<input type="range" data-k="bhd" min="12" max="40"></label>
 </section>
 <section data-s="acc" hidden>
 <p class="mut">El botón ⚡ de la cabecera ejecuta esta cadena paso a paso. Mantenlo pulsado para abrir esta pestaña.</p>
