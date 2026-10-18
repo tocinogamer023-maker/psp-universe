@@ -268,8 +268,10 @@ body.f3 .card.flip .inf b,body.f3 .card.flip .inf .meta{visibility:visible}
 body:not(.f3) .ed,body[data-et="0"] .ed{display:none}
 
 /* ===== Actualización 8: cristales, candado de presentación ===== */
-#fxb,#fxf{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#fxb{z-index:-1}#fxf{z-index:15}
 .lkp{width:30px;height:30px;min-height:30px}
 .card.plock .sb{display:none}
 .card.plock .lkp{opacity:.3}
+
+/* ===== Corrección de acomodo del carrusel ===== */
+.card,.fl,.ff,.fb{min-width:0}
+.v-car .card{width:var(--cw,150px);max-width:var(--cw,150px)}
