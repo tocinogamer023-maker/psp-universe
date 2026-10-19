@@ -275,3 +275,11 @@ body:not(.f3) .ed,body[data-et="0"] .ed{display:none}
 /* ===== Corrección de acomodo del carrusel ===== */
 .card,.fl,.ff,.fb{min-width:0}
 .v-car .card{width:var(--cw,150px);max-width:var(--cw,150px)}
+
+/* ===== Actualización 9: modo privado ===== */
+.pd{text-align:center;font-size:26px;letter-spacing:6px;margin:8px 0;min-height:36px}
+.pk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.pk button{min-height:52px;border-radius:14px;background:rgba(128,128,128,.25);font-size:20px}
+#secs button.ex{background:#c0392b!important;color:#fff;font-weight:700;border-color:transparent}
+#app.priv #ttl::after{content:' · privado';font-size:.45em;font-weight:500;opacity:.85}
+.tag{text-shadow:none!important}

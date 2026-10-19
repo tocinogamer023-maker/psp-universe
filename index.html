@@ -43,6 +43,8 @@
 
 <div id="qp" class="sheet drawer"><div class="panel pf dr"><div class="two top"><h2>Menú rápido</h2><button id="qc" class="xs" aria-label="Cerrar">✕</button></div><div class="pbody"><h3>🎵 Música</h3><section id="mp"></section><h3>Ajustes recientes y fijados</h3><section id="qr"></section></div></div></div>
 
+<div id="pin" class="sheet"><div class="panel sm"><h3 id="pt"></h3><div id="pd" class="pd"></div><div id="pk" class="pk"></div><button id="px" class="sec">Cancelar</button></div></div>
+
 <div id="am" class="sheet"><div class="panel sm"><h3 id="amt"></h3><button id="ame" class="sec">✎ Editar juego</button><button id="amd" class="dng">🗑 Eliminar de la biblioteca</button><button id="amc" class="sec">Cancelar</button></div></div>
 
 <div id="ds" class="sheet"><div class="panel pf">
@@ -118,6 +120,11 @@
 </section>
 <section data-s="sec" hidden>
 <p class="mut">Cambia emoji, nombre, vista y visibilidad de cada sección.</p><div id="secrows"></div>
+<h3>Modo privado</h3>
+<label class="row">Bloquear al salir de la app<input type="checkbox" data-k="plock"></label>
+<button id="pinchg" class="sec">Crear o cambiar el código</button>
+<button id="pinrst" class="dng">Restablecer modo privado (borra los juegos privados)</button>
+<p class="mut">Es un candado dentro de la app, no un cifrado: evita que otras personas vean tus juegos privados al usar tu teléfono. También puedes entrar manteniendo pulsado el título.</p>
 </section>
 <section data-s="ani" hidden>
 <label class="row">Animación de portadas<select data-k="canim"><option value="none">Ninguna</option><option value="cascade">Cascada</option><option value="zoom">Zoom</option><option value="flip">Giro 3D</option></select></label>

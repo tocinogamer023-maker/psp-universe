@@ -6,7 +6,7 @@ addEventListener('unhandledrejection',e=>{if(e.reason&&e.reason.stack&&!/app\.js
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const h=(t,a={},...c)=>{const e=document.createElement(t);for(const k in a){if(k.startsWith('on'))e[k]=a[k];else e.setAttribute(k,a[k])}e.append(...c.flat().filter(x=>x!=null&&x!==false));return e};
 const BGK=['bgImg','bgV','bgH','bgHI'];
-const DEF={mode:'dark',primary:'#7c5cff',secondary:'#19c6e6',bg:'#0b0d14',bgImg:'',bgV:'',bgH:'',bgHI:'',orient:'auto',overlay:35,blur:12,glass:55,cover:150,radius:18,shadow:30,gap:14,font:'system',anim:true,animBg:false,fit:'contain',ratio:'3/4',cbord:0,cbc:'#ffffff',bright:100,showCat:true,showNote:false,btn:'pill',tsize:14,pad:10,hsize:24,calign:'left',canim:'cascade',aspd:100,sfx:true,vol:40,pack:'soft',line:35,czoom:112,cang:38,cdim:45,bigt:true,tf:'system',tfs:26,tfc:'#ffffff',legib:60,perf:'full',ccover:190,edgeT:7,edgeC:'#ffffff',compact:true,pblur:10,pa:25,pdelay:0,psound:false,pdv:0,lfx:'zoom',bgt:false,bgti:40,bgtt:false,tout:50,bhd:25,flip3:true};
+const DEF={mode:'dark',primary:'#7c5cff',secondary:'#19c6e6',bg:'#0b0d14',bgImg:'',bgV:'',bgH:'',bgHI:'',orient:'auto',overlay:35,blur:12,glass:55,cover:150,radius:18,shadow:30,gap:14,font:'system',anim:true,animBg:false,fit:'contain',ratio:'3/4',cbord:0,cbc:'#ffffff',bright:100,showCat:true,showNote:false,btn:'pill',tsize:14,pad:10,hsize:24,calign:'left',canim:'cascade',aspd:100,sfx:true,vol:40,pack:'soft',line:35,czoom:112,cang:38,cdim:45,bigt:true,tf:'system',tfs:26,tfc:'#ffffff',legib:60,perf:'full',ccover:190,edgeT:7,edgeC:'#ffffff',compact:true,pblur:10,pa:25,pdelay:0,psound:false,pdv:0,lfx:'zoom',bgt:false,bgti:40,bgtt:false,tout:50,bhd:25,flip3:true,plock:true};
 const FONTS={system:'-apple-system,system-ui,sans-serif',rounded:'ui-rounded,"SF Pro Rounded",system-ui,sans-serif',serif:'ui-serif,Georgia,serif',mono:'ui-monospace,Menlo,monospace',didot:'"Didot","Bodoni 72",serif',avenir:'"Avenir Next",system-ui,sans-serif',futura:'"Futura","Avenir Next",sans-serif',optima:'"Optima",sans-serif',copper:'"Copperplate",serif',marker:'"Marker Felt",cursive'};
 const PRE={dark:'#0b0d14',light:'#f1f3f9'},VIEWS=['list','grid','car'],ICON={list:'☰',grid:'▦',car:'◫'},ORI=['auto','v','h','hi'];
 const PRESETS={
@@ -132,15 +132,16 @@ function card(g){
  return art;
 }
 function render(){
- const q=$('#q').value.trim().toLowerCase(),inSec=g=>{const t=g.type||'psp';return sec==='rec'?g.last>0:sec==='all'?ALLIN.includes(t):t===sec},base=games.filter(inSec),cats=[...new Set(base.map(g=>g.cat).filter(Boolean))].sort();
+ const q=$('#q').value.trim().toLowerCase(),vis=games.filter(g=>!!g.priv===priv),inSec=g=>{const t=g.type||'psp';return sec==='rec'?g.last>0:sec==='all'?ALLIN.includes(t):t===sec},base=vis.filter(inSec),cats=[...new Set(base.map(g=>g.cat).filter(Boolean))].sort();
  if(filter&&filter!=='*'&&!cats.includes(filter))filter='';
- $('#secs').replaceChildren(...SK.filter(k=>sc(k).on||k===sec).map(k=>h('button',{class:sec===k?'on':'',onclick:()=>{sec=k;filter='';view();render();snd('swap')}},sc(k).e+' '+sc(k).n)));
+ $('#app').classList.toggle('priv',priv);
+ $('#secs').replaceChildren(...SKM().filter(k=>sc(k).on||k===sec).map(k=>h('button',{class:sec===k?'on':'',onclick:()=>{if(k==='priv'){privEnter();return}sec=k;filter='';view();render();snd('swap')}},sc(k).e+' '+sc(k).n)),...(priv?[h('button',{class:'ex',onclick:privExit},'Salir del modo privado')]:[]));
  const chip=(l,v)=>h('button',{class:filter===v?'on':'',onclick:()=>{filter=v;render()}},l);
  $('#chips').replaceChildren(chip('Todas',''),chip('★ Favoritos','*'),...cats.map(c=>chip(c,c)));
- $('#cl').replaceChildren(...[...new Set(games.map(g=>g.cat).filter(Boolean))].sort().map(c=>h('option',{value:c})));
+ $('#cl').replaceChildren(...[...new Set(vis.map(g=>g.cat).filter(Boolean))].sort().map(c=>h('option',{value:c})));
  let L=base.filter(g=>(!q||(g.name+' '+g.cat+' '+g.note).toLowerCase().includes(q))&&(!filter||(filter==='*'?g.fav:g.cat===filter)));
  L=sec==='rec'?L.sort((a,b)=>b.last-a.last).slice(0,30):L.sort((a,b)=>a.name.localeCompare(b.name));
- const msg=sec==='rec'?'Aún no has abierto nada.':games.length?'No hay nada aquí todavía.':'Tu biblioteca está vacía.';
+ const msg=sec==='rec'?'Aún no has abierto nada.':vis.length?'No hay nada aquí todavía.':priv?'Tu espacio privado está vacío.':'Tu biblioteca está vacía.';
  $('#lib').replaceChildren(...(L.length?L.map((g,i)=>{const c=card(g);c.style.setProperty('--i',Math.min(i,12));return c}):[h('div',{class:'empty'},h('span',{},'🎮'),msg,sec==='rec'?null:h('div',{},h('button',{class:'pri',onclick:()=>edit(null)},'＋ Añadir')))]));
  requestAnimationFrame(applyCar);
 }
@@ -188,7 +189,7 @@ $('#fm').onsubmit=async e=>{
   let pr=old&&old.prev||'';
   if(pS.clear&&pr){await del('images',pr);URL.revokeObjectURL(imgs[pr]);delete imgs[pr];delete blobs[pr];isVid.delete(pr);pr=''}
   if(pS.file){if(pS.file.size>60e6)throw new Error('El video de presentación pesa más de 60 MB.');const nid='pv'+uid();await put('images',{id:nid,blob:pS.file,vid:true});if(pr){await del('images',pr);URL.revokeObjectURL(imgs[pr]);isVid.delete(pr);delete blobs[pr]}pr=nid;imgs[nid]=URL.createObjectURL(pS.file);blobs[nid]=pS.file;isVid.add(nid)}
-  const g={type:ty,last:old?old.last||0:0,vfile:vf,prev:pr,id:old?old.id:uid(),name:name.slice(0,120),cat:E.cat.value.trim().slice(0,40),note:E.note.value.trim().slice(0,300),link,fav:E.fav.checked,cover:cv};
+  const g={type:ty,last:old?old.last||0:0,vfile:vf,prev:pr,priv:old?!!old.priv:priv,id:old?old.id:uid(),name:name.slice(0,120),cat:E.cat.value.trim().slice(0,40),note:E.note.value.trim().slice(0,300),link,fav:E.fav.checked,cover:cv};
   await put('games',g);games=games.filter(x=>x.id!==g.id).concat(g);
  }catch(x){return err('No se pudo guardar: '+(x.message||x))}
  show('#gf',false);render();toast('Guardado ✓');
@@ -214,12 +215,16 @@ $('#tr').onclick=async()=>{if(!confirm('¿Restaurar el tema predeterminado? Tus 
 /* ---------- Exportar / importar ---------- */
 $('#ex').onclick=async()=>{
  try{
-  const ims=(await all('images')).filter(i=>!i.blob),skipped=isVid.size;
-  const d={app:'psp-universe',v:2,date:new Date().toISOString(),meta:M,settings:S,games,themes:await all('themes'),images:ims};
-  const blob=new Blob([JSON.stringify(d)],{type:'application/json'}),f=new File([blob],'psp-universe-copia.json',{type:'application/json'});
+  const mine=games.filter(g=>!!g.priv===priv),ref=new Set(),th=await all('themes');
+  mine.forEach(g=>{if(g.cover&&g.cover.startsWith('img:'))ref.add(g.cover.slice(4))});
+  [S,...th].forEach(o=>['bgImg','bgV','bgH','bgHI'].forEach(k=>{if(o[k])ref.add(o[k])}));
+  const ims=(await all('images')).filter(i=>!i.blob&&ref.has(i.id)),skipped=isVid.size;
+  const meta={...M};if(!priv)delete meta.secsP;delete meta.mu;
+  const d={app:'psp-universe',v:2,priv,date:new Date().toISOString(),meta,settings:S,games:mine,themes:th,images:ims};
+  const blob=new Blob([JSON.stringify(d)],{type:'application/json'}),f=new File([blob],priv?'game-space-privado.json':'psp-universe-copia.json',{type:'application/json'});
   if(skipped)toast('Aviso: los fondos de video no entran en la copia.');
   if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f]});return}catch(e){if(e.name==='AbortError')return}}
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);toast('Copia exportada ✓');
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),5000);toast(priv?'Copia privada exportada ✓':'Copia exportada ✓');
  }catch(e){toast('No se pudo exportar: '+(e.message||e),1)}
 };
 function cleanS(x,ids){
@@ -248,21 +253,27 @@ function clean(d){
  if(d.games.length>2000)throw new Error('Demasiados juegos.');
  const s=x=>typeof x==='string'?x:'',okId=x=>/^[\w-]{1,40}$/.test(s(x));
  const im=(Array.isArray(d.images)?d.images:[]).filter(i=>i&&okId(i.id)&&/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(s(i.data))&&i.data.length<6e6).map(i=>({id:i.id,data:i.data})),ids=new Set(im.map(i=>i.id));
- const gs=d.games.filter(g=>g&&okId(g.id)&&s(g.name).trim()).map(g=>{const c=s(g.cover),ty=ALLT.includes(g.type)?g.type:'psp';return{type:ty,last:Number.isFinite(g.last)?g.last:0,id:g.id,name:s(g.name).trim().slice(0,120),cat:s(g.cat).slice(0,40),note:s(g.note).slice(0,300),link:okFor(ty,s(g.link))?g.link:'',fav:g.fav===true,cover:c.startsWith('img:')?(ids.has(c.slice(4))?c:''):/^https?:\/\/\S+$/i.test(c)?c:''}});
+ const gs=d.games.filter(g=>g&&okId(g.id)&&s(g.name).trim()).map(g=>{const c=s(g.cover),ty=ALLT.includes(g.type)?g.type:'psp';return{type:ty,last:Number.isFinite(g.last)?g.last:0,priv:g.priv===true,id:g.id,name:s(g.name).trim().slice(0,120),cat:s(g.cat).slice(0,40),note:s(g.note).slice(0,300),link:okFor(ty,s(g.link))?g.link:'',fav:g.fav===true,cover:c.startsWith('img:')?(ids.has(c.slice(4))?c:''):/^https?:\/\/\S+$/i.test(c)?c:''}});
  const th=(Array.isArray(d.themes)?d.themes:[]).filter(t=>t&&s(t.id).trim()).slice(0,100).map(t=>({...cleanS(t,ids),id:s(t.id).trim().slice(0,40)}));
  const m=d.meta||{};
- return{games:gs,im,themes:th,S:cleanS(d.settings,ids),M:{title:s(m.title).slice(0,60)||'Game Space',sub:s(m.sub).slice(0,80),view:VIEWS.includes(m.view)?m.view:'grid',secs:cleanSecs(m.secs),acts:cleanActs(m.acts)}};
+ return{games:gs,im,themes:th,S:cleanS(d.settings,ids),M:{title:s(m.title).slice(0,60)||'Game Space',sub:s(m.sub).slice(0,80),view:VIEWS.includes(m.view)?m.view:'grid',secs:cleanSecs(m.secs),secsP:cleanSecs(m.secsP),acts:cleanActs(m.acts)}};
 }
 $('#imf').onchange=async e=>{
  const f=e.target.files[0];e.target.value='';if(!f)return;
  try{
   if(f.size>80e6)throw new Error('Archivo demasiado grande.');
-  const d=clean(JSON.parse(await f.text()));
-  if(!confirm(`Vas a REEMPLAZAR tu biblioteca actual (${games.length} juegos) por la copia (${d.games.length} juegos, ${d.im.length} imágenes). Tus fondos de video actuales se perderán.\n¿Continuar?`))return;
+  const d=clean(JSON.parse(await f.text())),other=games.filter(g=>!!g.priv!==priv),mine=games.filter(g=>!!g.priv===priv);
+  if(!confirm(`Vas a REEMPLAZAR ${priv?'tus juegos PRIVADOS':'tu biblioteca'} (${mine.length} juegos) por la copia (${d.games.length} juegos, ${d.im.length} imágenes).${priv?'':' Tus juegos privados no se tocan.'} Tus fondos de video actuales se perderán.\n¿Continuar?`))return;
+  const keep=new Set();other.forEach(g=>[g.vfile,g.prev,g.cover&&g.cover.startsWith('img:')?g.cover.slice(4):''].forEach(id=>{if(id)keep.add(id)}));
+  const recs=(await all('images')).filter(i=>keep.has(i.id)||i.id.slice(0,2)==='mu');
   for(const s of['games','images','themes'])await clr(s);
-  for(const g of d.games)await put('games',g);for(const i of d.im)await put('images',i);for(const t of d.themes)await put('themes',t);
-  isVid.forEach(id=>URL.revokeObjectURL(imgs[id]));isVid=new Set();
-  games=d.games;imgs=Object.fromEntries(d.im.map(i=>[i.id,i.data]));S=d.S;M=d.M;lsSet('psp-s',S);lsSet('psp-m',M);
+  for(const g of other)await put('games',g);for(const i of recs)await put('images',i);
+  const ng=d.games.map(g=>({...g,priv}));
+  for(const g of ng)await put('games',g);for(const i of d.im)await put('images',i);for(const t of d.themes)await put('themes',t);
+  const keepImgs=Object.fromEntries(Object.entries(imgs).filter(([id])=>keep.has(id)));
+  isVid=new Set([...isVid].filter(id=>keep.has(id)));Object.keys(blobs).forEach(id=>{if(!keep.has(id)&&id.slice(0,2)!=='mu')delete blobs[id]});
+  games=[...other,...ng];imgs={...keepImgs,...Object.fromEntries(d.im.map(i=>[i.id,i.data]))};
+  const oc=priv?'secs':'secsP';S=d.S;M={...M,...d.M,[oc]:M[oc],mu:M.mu};lsSet('psp-s',S);lsSet('psp-m',M);
   sync();$$('[data-m]').forEach(el=>el.value=M[el.dataset.m]);lastBg=null;apply();orient();head();view();themes();bgRows();render();toast('Copia importada ✓');
  }catch(x){toast('No se pudo importar: '+(x.message||x),1)}
 };
@@ -535,6 +546,31 @@ function qpUI(){
 $('#bMenu').onclick=()=>{sync();mpUI();qpUI();show('#qp')};
 $('#qc').onclick=()=>show('#qp',false);
 $('#qp').addEventListener('click',e=>{if(e.target===e.currentTarget)show('#qp',false)});
+/* ---------- Modo privado ---------- */
+const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('gs:'+s)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+function askPin(title){return new Promise(res=>{let v='';const pd=$('#pd'),pk=$('#pk'),fin=r=>{show('#pin',false);res(r)};
+ $('#pt').textContent=title;const upd=()=>{pd.textContent='●'.repeat(v.length)+'○'.repeat(6-v.length)};upd();
+ pk.replaceChildren(...[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>h('button',{onclick:()=>{if(k==='')return;if(k==='⌫')v=v.slice(0,-1);else if(v.length<6)v+=k;upd();if(v.length===6)setTimeout(()=>fin(v),140)}},String(k))));
+ $('#px').onclick=()=>fin(null);show('#pin')})}
+async function privEnter(){
+ if(!(window.crypto&&crypto.subtle))return toast('Este navegador no permite crear el código de seguridad.',1);
+ const h0=localStorage.getItem('psp-pin');
+ if(!h0){const a=await askPin('Crea tu código de 6 dígitos');if(!a)return;const b=await askPin('Repite el código');if(!b)return;if(a!==b)return toast('Los códigos no coinciden.',1);localStorage.setItem('psp-pin',await sha(a))}
+ else{const a=await askPin('Código del modo privado');if(!a)return;if(await sha(a)!==h0)return toast('Código incorrecto.',1)}
+ priv=true;sec='rec';filter='';$('#q').value='';view();render();secUI();snd('swap');toast('Modo privado')}
+function privExit(){priv=false;sec='all';filter='';$('#q').value='';show('#ds',false);show('#qp',false);show('#gf',false);view();render();secUI()}
+$('#pinchg').onclick=async()=>{
+ try{const h0=localStorage.getItem('psp-pin');
+  if(h0){const a=await askPin('Código actual');if(!a)return;if(await sha(a)!==h0)return toast('Código incorrecto.',1)}
+  const n1=await askPin('Nuevo código');if(!n1)return;const n2=await askPin('Repite el nuevo código');if(!n2)return;if(n1!==n2)return toast('Los códigos no coinciden.',1);
+  localStorage.setItem('psp-pin',await sha(n1));toast('Código guardado ✓')}catch{toast('No se pudo guardar el código.',1)}};
+$('#pinrst').onclick=async()=>{
+ if(!confirm('¿Borrar TODOS los juegos privados y quitar el código? Esto no se puede deshacer.'))return;
+ try{for(const g of games.filter(g=>g.priv)){await del('games',g.id);for(const id of [g.vfile,g.prev,g.cover&&g.cover.startsWith('img:')?g.cover.slice(4):'']){if(id){try{await del('images',id)}catch{}try{URL.revokeObjectURL(imgs[id])}catch{}delete imgs[id];delete blobs[id];isVid.delete(id)}}}
+  games=games.filter(g=>!g.priv);localStorage.removeItem('psp-pin');M.secsP={};lsSet('psp-m',M);privExit();toast('Modo privado restablecido')}catch{toast('No se pudo restablecer.',1)}};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&priv&&S.plock)privExit()});
+let tp;$('#ttl').addEventListener('pointerdown',()=>{tp=setTimeout(()=>{if(!priv)privEnter()},800)});
+['pointerup','pointerleave','pointercancel'].forEach(ev=>$('#ttl').addEventListener(ev,()=>clearTimeout(tp)));
 const showLog=()=>{$('#logv').textContent=LOG.join('\n')||'Sin errores registrados.'};
 $('#logc').onclick=()=>navigator.clipboard.writeText(LOG.join('\n')).then(()=>toast('Registro copiado ✓')).catch(()=>toast('No se pudo copiar.',1));
 $('#logx').onclick=()=>{LOG.length=0;try{localStorage.removeItem('psp-log')}catch{}showLog()};
@@ -560,15 +596,17 @@ function player(src){const v=$('#plv');v.src=src;show('#pl');plLock(false);v.pla
 $('#plc').onclick=()=>{const v=$('#plv');plLock(false);v.pause();v.removeAttribute('src');v.load();show('#pl',false)};
 
 /* ---------- Secciones ---------- */
-const SK=['rec','all','game','online','web','video','psp','nes','n64','snes','gbc','gba','nds'],SD={rec:['Recientes','🕘'],all:['Todo','🏠'],game:['Juegos','📱'],online:['Juegos online','🌍'],web:['Web','🌐'],video:['Videos','🎬'],psp:['PSP','🎮'],nes:['Nintendo NES','🕹️'],n64:['Nintendo 64','🎲'],snes:['Super Nintendo','🎮'],gbc:['Game Boy Color','🟣'],gba:['Game Boy Advance','🔷'],nds:['Nintendo DS','📟']};
-const sc=k=>{const x=(M.secs||{})[k]||{};return{n:x.n||SD[k][0],e:x.e||SD[k][1],on:x.on!==false,view:x.view||''}};
-const setSec=(k,p)=>{M.secs=M.secs||{};M.secs[k]={...(M.secs[k]||{}),...p};lsSet('psp-m',M)};
+const SK=['rec','all','game','online','web','video','psp','nes','n64','snes','gbc','gba','nds','priv'],SKP=['rec','video','web','online','game','psp','nes','snes','n64','gbc','gba','nds'],SD={rec:['Recientes','🕘'],all:['Todo','🏠'],game:['Juegos','📱'],online:['Juegos online','🌍'],web:['Web','🌐'],video:['Videos','🎬'],psp:['PSP','🎮'],nes:['Nintendo NES','🕹️'],n64:['Nintendo 64','🎲'],snes:['Super Nintendo','🎮'],gbc:['Game Boy Color','🟣'],gba:['Game Boy Advance','🔷'],nds:['Nintendo DS','📟'],priv:['Privado','🔒']};
+let priv=false;
+const SKM=()=>priv?SKP:SK,SCF=()=>priv?'secsP':'secs';
+const sc=k=>{const x=((M[SCF()]||{})[k])||{};return{n:x.n||SD[k][0],e:x.e||SD[k][1],on:x.on!==false,view:x.view||''}};
+const setSec=(k,p)=>{const f=SCF();M[f]=M[f]||{};M[f][k]={...(M[f][k]||{}),...p};lsSet('psp-m',M)};
 function secUI(){
- $('#secrows').replaceChildren(...SK.map(k=>{const c=sc(k),cb=h('input',{type:'checkbox',onchange:e=>{setSec(k,{on:e.target.checked});render()}});cb.checked=c.on;
+ $('#secrows').replaceChildren(h('p',{class:'mut'},priv?'Estás editando las secciones del modo privado.':'Aquí editas las secciones normales. Las del modo privado se editan estando dentro de él.'),...SKM().map(k=>{const c=sc(k),cb=h('input',{type:'checkbox',onchange:e=>{setSec(k,{on:e.target.checked});render()}});cb.checked=c.on;
   return h('div',{class:'sr'},h('input',{value:c.e,maxlength:'4',class:'se',oninput:e=>{setSec(k,{e:e.target.value});render()}}),h('input',{value:c.n,maxlength:'20',oninput:e=>{setSec(k,{n:e.target.value});render()}}),
    h('select',{onchange:e=>{setSec(k,{view:e.target.value});view()}},...[['','Vista global'],['list','Lista'],['grid','Cuadrícula'],['car','Carrusel']].map(([v,l])=>{const o=h('option',{value:v},l);if(v===c.view)o.selected=true;return o})),cb)}));
 }
-function cleanSecs(x){const o={},s=v=>typeof v==='string'?v:'';if(x&&typeof x==='object')for(const k of SK){const c=x[k];if(c&&typeof c==='object')o[k]={n:s(c.n).slice(0,20),e:s(c.e).slice(0,4),on:c.on!==false,view:VIEWS.includes(c.view)?c.view:''}}return o}
+function cleanSecs(x){const o={},s=v=>typeof v==='string'?v:'';if(x&&typeof x==='object')for(const k of Object.keys(SD)){const c=x[k];if(c&&typeof c==='object')o[k]={n:s(c.n).slice(0,20),e:s(c.e).slice(0,4),on:c.on!==false,view:VIEWS.includes(c.view)?c.view:''}}return o}
 
 /* ---------- Acciones en cadena (botón ⚡) ---------- */
 const AT={theme:'Aplicar tema',orient:'Orientación',wait:'Esperar',bg:'Recargar fondo'};
